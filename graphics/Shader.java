@@ -1,68 +1,60 @@
 package graphics;
 
 import math.Matrix4f;
+import math.Transform;
 import math.Vector3f;
 
-public class Shader  extends ShaderProgram
+public class Shader extends ShaderProgram
 {
+	private static final String VERTEX_FILE = "graphics/VertexShader.vert";
+	private static final String FRAGMENT_FILE = "graphics/VertexShader.frag";
+
 	private int locationTransformationMatrix;
 	private int locationProjectionMatrix;
 	private int locationViewMatrix;
 	private int locationSkyColor;
-	private int position;
-	private int rotation;
-	public Shader(String vertexFilename, String fragmentFilename)
+	private int locationPosition;
+
+	public Shader()
 	{
-		super(vertexFilename, fragmentFilename);
-		// TODO Auto-generated constructor stub
+		super(VERTEX_FILE, FRAGMENT_FILE);
 	}
 
 	@Override
 	protected void getAllUniformsLocation()
 	{
-		// TODO Auto-generated method stub
-		
+		locationTransformationMatrix = super.getUniformLocation("transformationMatrix");
+		locationProjectionMatrix = super.getUniformLocation("projectionMatrix");
+		locationViewMatrix = super.getUniformLocation("viewMatrix");
+		locationSkyColor = super.getUniformLocation("skyColour");
+		locationPosition = super.getUniformLocation("position");
 	}
 
 	@Override
 	protected void bindAttributes()
 	{
-		// TODO Auto-generated method stub
-		
+		super.bindAttribute(0, "position");
+		super.bindAttribute(1, "textureCoords");
 	}
 
-	public void loadFloat(float value)
-	{
-		
-	}
-	
-	public void loadTransformationMatrix(Matrix4f mat)
-	{
-		
-	}
-	
-	public void loadProjectionMatrix(Matrix4f mat)
-	{
-		
-	}
-	
-	public void loadViewMatrix(Matrix4f mat)
-	{
-		
-	}
-	
-	public void loadVector(Vector3f vec)
-	{
-		
-	}
-	
-	public void loadSkyColor(Vector3f rgb)
-	{
-		
-	}
-	
-	public void loadBoolean(boolean value)
-	{
-		
-	}
+    public void loadTransformationMatrix(Matrix4f matrix){
+        super.loadMatrix(locationTransformationMatrix, matrix);
+    }
+    
+    public void loadProjectionMatrix(Matrix4f projectionMatrix){
+        super.loadMatrix(locationProjectionMatrix, projectionMatrix);
+    }
+    
+    public void loadViewMatrix(Camera camera){
+        Matrix4f viewMatrix = Transform.getViewMatrix(camera);
+        super.loadMatrix(locationViewMatrix, viewMatrix);
+    }
+    
+    public void loadSkyColour(float r, float g, float b){
+        super.loadVector(locationSkyColor, new Vector3f(r, g, b));
+    }
+    
+    public void loadPostion(Vector3f position){
+        super.loadVector(locationPosition, position);
+    }
 }

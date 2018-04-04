@@ -6,61 +6,93 @@ public class Matrix4f
 	
 	public Matrix4f()
 	{
-		// TODO Auto-generated constructor stub
+		data = new float[4][4];
 	}
 	
 	public Matrix4f initIdentity()
 	{
-		return null;
+		data[0][0] = 1;     data[0][1] = 0;   data[0][2] = 0;   data[0][3] = 0;
+        data[1][0] = 0;     data[1][1] = 1;   data[1][2] = 0;   data[1][3] = 0;
+        data[2][0] = 0;     data[2][1] = 0;   data[2][2] = 1;   data[2][3] = 0;
+        data[3][0] = 0;     data[3][1] = 0;   data[3][2] = 0;   data[3][3] = 1;
+        
+        return this;
 	}
 	
-	public Matrix4f initTranslation()
+	public Matrix4f initTranslation(Vector3f translation)
 	{
-		return null;
+		data[0][0] = 1;     data[0][1] = 0;   data[0][2] = 0;   data[0][3] = translation.getX();
+        data[1][0] = 0;     data[1][1] = 1;   data[1][2] = 0;   data[1][3] = translation.getY();
+        data[2][0] = 0;     data[2][1] = 0;   data[2][2] = 1;   data[2][3] = translation.getZ();
+        data[3][0] = 0;     data[3][1] = 0;   data[3][2] = 0;   data[3][3] = 1;
+        
+        return this;
 	}
 	
-	public Matrix4f initRotation()
+	public Matrix4f initScale(Vector3f scale)
 	{
-		return null;
-	}
-	
-	public Matrix4f initScale()
-	{
-		return null;
+		data[0][0] = scale.getX();	data[0][1] = 0;				data[0][2] = 0;				data[0][3] = 0;
+        data[1][0] = 0;				data[1][1] = scale.getY();	data[1][2] = 0;				data[1][3] = 0;
+        data[2][0] = 0;				data[2][1] = 0;				data[2][2] = scale.getZ();	data[2][3] = 0;
+        data[3][0] = 0;				data[3][1] = 0;				data[3][2] = 0;				data[3][3] = 1;
+        
+        return this;
 	}
 	
 	public Matrix4f initProjection(float left, float right, float bottom, float top, float near, float far)
 	{
-		return null;
+		data[0][0] = 2.0f / (right - left);  data[0][1] = 0;                       data[0][2] = 0;                        data[0][3] = (left + right) / (left - right);
+        data[1][0] = 0;                      data[1][1] = 2.0f / (top - bottom);   data[1][2] = 0;                        data[1][3] = (bottom + top) / (bottom - top);
+        data[2][0] = 0;                      data[2][1] = 0;                       data[2][2] = 2.0f / (near - far);      data[2][3] = (far + near) / (far - near);
+        data[3][0] = 0;                      data[3][1] = 0;                       data[3][2] = 0;                        data[3][3] = 1;
+        
+        return this;
 	}
 	
 	public Matrix4f mul(Matrix4f rhs)
 	{
-		return null;
+        Matrix4f result = new Matrix4f();
+        for (int i =0; i<4 ; i++){
+            for (int j = 0; j<4 ; j++){
+                result.setEntry(
+                            i,j,data[i][0]* rhs.getEntry(0, j)+
+                                data[i][1]* rhs.getEntry(1, j)+
+                                data[i][2]* rhs.getEntry(2, j)+
+                                data[i][3]* rhs.getEntry(3, j)
+                          );
+            }
+        }
+        return result;
 	}
 	
 	public Matrix4f mul(float amount)
 	{
-		return null;
+		Matrix4f result = new Matrix4f();
+        for (int i =0; i<4 ; i++){
+            for (int j = 0; j<4 ; j++){
+                data[i][j] *= amount;
+            }
+        }
+        return result;
 	}
 	
 	public float[][] getData()
 	{
-		return null;
+		return data;
 	}
 	
 	public float getEntry(int r, int c)
 	{
-		return 0;
+		return data[r][c];
 	}
 	
-	public void setData()
+	public void setData(float data[][])
 	{
-		
+		this.data = data;
 	}
 	
-	public void setEntry(int r, int c)
+	public void setEntry(int r, int c, float value)
 	{
-		
+		data[r][c] = value;
 	}
 }

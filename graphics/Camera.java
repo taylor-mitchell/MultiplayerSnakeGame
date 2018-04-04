@@ -8,7 +8,6 @@ public class Camera
 
 	public Camera(Vector3f position)
 	{
-		super();
 		this.position = position;
 	}
 
@@ -17,8 +16,8 @@ public class Camera
 		return position;
 	}
 	
-	public void translate(Vector3f vec)
+	public void translate(Vector3f amount)
 	{
-		
+		position.add(amount);
 	}
 }

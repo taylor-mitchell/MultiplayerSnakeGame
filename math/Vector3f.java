@@ -6,9 +6,18 @@ public class Vector3f
 	private float y;
 	private float z;
 	
+	public Vector3f(Vector3f vec)
+	{
+		this.x = vec.x;
+		this.y = vec.y;
+		this.z = vec.z;
+	}
+	
 	public Vector3f(float x, float y, float z)
 	{
-		
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	public float getX()
@@ -41,32 +50,47 @@ public class Vector3f
 		this.z = z;
 	}
 	
-	public Vector3f add(float amount)
+	public Vector3f add(Vector3f rhs)
 	{
-		return null;
+		x += rhs.x;
+		y += rhs.y;
+		z += rhs.z;
+		return this;
 	}
 	
-	public Vector3f sub(float amount)
+	public Vector3f sub(Vector3f rhs)
 	{
-		return null;
+		x -= rhs.x;
+		y -= rhs.y;
+		z -= rhs.z;
+		return this;
 	}
 	
-	public Vector3f mul(float amount)
+	public Vector3f mul(Vector3f rhs)
 	{
-		return null;
+		x *= rhs.x;
+		y *= rhs.y;
+		z *= rhs.z;
+		return this;
 	}
 	
+	public Vector3f flip()
+	{
+		return new Vector3f(-x, -y, -z);
+	}
+
 	@Override
 	public String toString()
 	{
 		// TODO Auto-generated method stub
-		return super.toString();
+		return String.format("(%f, %f, %f)", x, y, z);
 	}
 	
 	@Override
 	public boolean equals(Object obj)
 	{
-		// TODO Auto-generated method stub
-		return super.equals(obj);
+		Vector3f rhs = (Vector3f) obj;
+		return x == rhs.x && y == rhs.y && z == rhs.z;
 	}
-}
+
+	}

@@ -15,7 +15,6 @@ public class Snake extends Entity
 	public Snake(Vector3f position, RawQuad rawQuad, Texture texture)
 	{
 		super(position, rawQuad, texture);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

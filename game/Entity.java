@@ -14,17 +14,20 @@ public abstract class Entity
 	
 	public Entity(Vector3f position, RawQuad rawQuad, Texture texture)
 	{
-		
+		this.position = position;
+		this.scale = new Vector3f(1, 1, 1);
+		this.rawQuad = rawQuad;
+		this.texture = texture;
 	}
 	
-	public void translate(Vector3f vec)
+	public void translate(Vector3f amount)
 	{
-		
+		position.add(amount);
 	}
 	
-	public void addScale(float amount)
+	public void addScale(Vector3f amount)
 	{
-		
+		scale.add(amount);
 	}
 
 	public Vector3f getPosition()

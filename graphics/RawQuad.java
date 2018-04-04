@@ -7,7 +7,6 @@ public class RawQuad
 	
 	public RawQuad(int vaoID, int vertexCount)
 	{
-		super();
 		this.vaoID = vaoID;
 		this.vertexCount = vertexCount;
 	}
