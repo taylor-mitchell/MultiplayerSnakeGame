@@ -20,4 +20,8 @@ public class Camera
 	{
 		position.add(amount);
 	}
+	
+	public void setPosition(Vector3f pos) {
+		position = pos;
+	}
 }

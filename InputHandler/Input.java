@@ -13,7 +13,7 @@ public class Input extends GLFWKeyCallback
 	// Overrides GLFW's own implementation of the Invoke method
 	// This gets called everytime a key is pressed.
 
-	@Override
+	
 	public void invoke(long window, int key, int scancode, int action, int mods)
 	{
 		keys[key] = action != GLFW.GLFW_RELEASE;

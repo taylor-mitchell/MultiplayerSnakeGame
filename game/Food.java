@@ -10,14 +10,14 @@ public class Food extends Entity
 	private float currentSize;
 	private int worth;
 	private boolean shouldGrow;
+	private boolean eaten;
 	
-	public Food(Vector3f position, RawQuad rawQuad, Texture texture)
+	public Food(Vector3f position, RawQuad rawQuad, Texture texture, int worth, double radius)
 	{
-		super(position, rawQuad, texture);
-		// TODO Auto-generated constructor stub
+		super(position, rawQuad, texture, radius);
+		this.worth = worth;
 	}
 
-	@Override
 	public void animate()
 	{
 		// TODO Auto-generated method stub

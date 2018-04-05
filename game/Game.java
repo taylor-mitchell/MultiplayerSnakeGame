@@ -1,7 +1,11 @@
 package game;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.Timer;
 
 import org.lwjgl.glfw.GLFW;
 
@@ -24,6 +28,10 @@ public class Game
 	private Shader shader;
 	private List<Entity> entitiesToRender;
 	private Snake snake;
+	private List<Food> foodList;
+	
+	private int foodCount;
+
 	
 	public Game()
 	{
@@ -32,7 +40,7 @@ public class Game
 	}
 	
 	public void initGame()
-	{
+	{				
 		Vector3f pos = new Vector3f(0, 0, 0);
 		camera = new Camera(pos);
 		
@@ -45,15 +53,49 @@ public class Game
 		
 		RawQuad rawQuad = QuadLoader.loadToVAO(new Quad());
 		Texture texture = new Texture("game/placeholder.png");
-		snake = new Snake(pos, rawQuad, texture);
+		Texture snakeTexture = new Texture("game/single_stroke.png");
+		Texture foodTexture = new Texture("game/trippy.png");
+		snake = new Snake(pos, rawQuad, snakeTexture, 100);
+		snake.setSpeed(0.05f);
+		snake.setBodyPartDistance(0.5f);
+		snake.setDirection(Math.PI);
+		
+		foodCount = 1000;
+		
+		foodList = new ArrayList<Food>();
+		
+		for(int i = 0; i < foodCount; i++) {
+			foodList.add(new Food(new Vector3f((float)(Math.random() * 100.f - 50.f), (float)(Math.random() * 100.0f - 50.f), 0), rawQuad, foodTexture, 2, 0.1)); 
+		}
+
 	}
-	
+
+
 	public void runGameLoop()
 	{
-		entitiesToRender = new ArrayList<>(1);
-		entitiesToRender.add(snake);
+		entitiesToRender = new ArrayList<>();
+		entitiesToRender.addAll(snake.getBody());
+		entitiesToRender.addAll(foodList);
 		while(!display.windowShouldClose())
 		{
+			for (Food f : foodList) {
+				if (f.collisionCheck(snake.getBody().get(0))){
+					snake.addToBody(f.getWorth());
+					f.setPosition(new Vector3f((float)(Math.random() * 100.f - 50.f), (float)(Math.random() * 100.0f - 50.f), 0));
+				}
+			}
+			if (display.isLeftPressed()) {
+				snake.setTurn(1);
+			}else if (display.isRightPressed()) {
+				snake.setTurn(-1);
+			}else if (display.isUpPressed()){
+				snake.speedUp();
+			}else {
+				snake.setTurn(0);
+				snake.slowDown();
+			}
+			snake.keyUpdate();
+			camera.setPosition(snake.getBody().get(0).getPosition());
 			display.updateDisplay();
 			renderer.prepare();
 			renderer.renderEntities(entitiesToRender);

@@ -132,4 +132,16 @@ public class GameWindow
 	{
 		glfwDestroyWindow(window);
 	}
+	
+	public boolean isRightPressed() {
+		return glfwGetKey(window, GLFW_KEY_RIGHT) == GL_TRUE;
+	}
+	
+	public boolean isLeftPressed() {
+		return glfwGetKey(window, GLFW_KEY_LEFT) == GL_TRUE;
+	}
+	
+	public boolean isUpPressed() {
+		return glfwGetKey(window, GLFW_KEY_UP) == GL_TRUE;
+	}
 }
