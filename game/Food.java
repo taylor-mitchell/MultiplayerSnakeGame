@@ -16,6 +16,7 @@ public class Food extends Entity
 	{
 		super(position, rawQuad, texture, radius);
 		this.worth = worth;
+		body.add(this);
 	}
 
 	public void animate()

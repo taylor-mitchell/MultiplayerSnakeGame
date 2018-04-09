@@ -1,30 +1,31 @@
 package game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import graphics.RawQuad;
 import graphics.Texture;
 import math.Vector3f;
 
 public abstract class Entity 
 {
+	protected Vector3f color;
+	protected List<Entity> body;
 	protected Vector3f position;
-	private Vector3f scale;
-	private RawQuad rawQuad;
-	private Texture texture;
-	private boolean playingOddAnimation;
+	protected Vector3f scale;
+	protected RawQuad rawQuad;
+	protected Texture texture;
+	protected boolean playingOddAnimation;
 	protected boolean inPlay;
-	private double radius;
+	protected double radius;
 	
 	public Entity(Vector3f position, RawQuad rawQuad, Texture texture)
 	{
-		this.position = position;
-		this.scale = new Vector3f(1, 1, 1);
-		this.rawQuad = rawQuad;
-		this.texture = texture;
-		this.radius = 0;
-		this.inPlay = true;
+		this(position, rawQuad, texture, 0);
 	}
 	
 	public Entity(Vector3f position, RawQuad rawQuad, Texture texture, double radius) {
+		this.body = new ArrayList<Entity>();
 		this.position = position;
 		this.scale = new Vector3f(1, 1, 1);
 		this.rawQuad = rawQuad;
@@ -99,5 +100,19 @@ public abstract class Entity
 	public void setPosition(Vector3f vector3f) {
 		this.position = vector3f;
 		
+	}
+
+	public List<Entity> getBody()
+	{
+		return body;
+	}
+	
+	/** 
+	 * 
+	 * @return null if the color was not manually set.
+	 */
+	public Vector3f getColor()
+	{
+		return color;
 	}
 }

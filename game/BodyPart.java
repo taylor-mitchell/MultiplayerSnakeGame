@@ -19,5 +19,4 @@ public class BodyPart extends Entity{
 		// TODO Auto-generated method stub
 		
 	}
-
 }

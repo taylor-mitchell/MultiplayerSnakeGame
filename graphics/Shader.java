@@ -8,13 +8,13 @@ public class Shader extends ShaderProgram
 {
 	private static final String VERTEX_FILE = "graphics/VertexShader.vert";
 	private static final String FRAGMENT_FILE = "graphics/VertexShader.frag";
-
+	
+	private int locationOverrideTextureColor;
 	private int locationTransformationMatrix;
 	private int locationProjectionMatrix;
 	private int locationViewMatrix;
-	private int locationSkyColor;
-	private int locationPosition;
-
+	private int locationColor;
+	
 	public Shader()
 	{
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -23,11 +23,11 @@ public class Shader extends ShaderProgram
 	@Override
 	protected void getAllUniformsLocation()
 	{
+		locationOverrideTextureColor = super.getUniformLocation("overrideTextureColor");
 		locationTransformationMatrix = super.getUniformLocation("transformationMatrix");
 		locationProjectionMatrix = super.getUniformLocation("projectionMatrix");
 		locationViewMatrix = super.getUniformLocation("viewMatrix");
-		locationSkyColor = super.getUniformLocation("skyColour");
-		locationPosition = super.getUniformLocation("position");
+		locationColor = super.getUniformLocation("color");
 	}
 
 	@Override
@@ -37,24 +37,32 @@ public class Shader extends ShaderProgram
 		super.bindAttribute(1, "textureCoords");
 	}
 
-    public void loadTransformationMatrix(Matrix4f matrix){
+    public void loadTransformationMatrix(Matrix4f matrix)
+    {
         super.loadMatrix(locationTransformationMatrix, matrix);
     }
     
-    public void loadProjectionMatrix(Matrix4f projectionMatrix){
+    public void loadProjectionMatrix(Matrix4f projectionMatrix)
+    {
         super.loadMatrix(locationProjectionMatrix, projectionMatrix);
     }
     
-    public void loadViewMatrix(Camera camera){
+    public void loadViewMatrix(Camera camera)
+    {
         Matrix4f viewMatrix = Transform.getViewMatrix(camera);
         super.loadMatrix(locationViewMatrix, viewMatrix);
     }
-    
-    public void loadSkyColour(float r, float g, float b){
-        super.loadVector(locationSkyColor, new Vector3f(r, g, b));
-    }
-    
-    public void loadPostion(Vector3f position){
-        super.loadVector(locationPosition, position);
+
+    public void loadColor(Vector3f color)
+    {
+    	if (color == null)
+    	{
+    		super.loadBoolean(locationOverrideTextureColor, false);
+    	}
+    	else
+    	{
+    		super.loadBoolean(locationOverrideTextureColor, true);
+    		super.loadVector(locationColor, color);
+    	}
     }
 }

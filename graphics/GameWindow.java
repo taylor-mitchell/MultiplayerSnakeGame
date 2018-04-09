@@ -14,13 +14,14 @@ import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 import java.nio.IntBuffer;
+import java.util.concurrent.TimeUnit;
 
 public class GameWindow
 {
 	private int width;
 	private int height;
-	private long lastFrameTime;
-	private float deltaTime;
+	private double lastFrameTime;
+	private double deltaTime;
 	private long window;
 	private GLFWKeyCallback keyCallback;
 	private GLFWErrorCallback errorCallback;
@@ -64,6 +65,9 @@ public class GameWindow
         GL.createCapabilities();
         
         // Enable v-sync
+        // 0 = unlimited framerate
+        // 1 = 60 fps
+        // 2 = 30 fps
         glfwSwapInterval(1);
         
         // finally shows our created window in all it's glory.
@@ -81,7 +85,7 @@ public class GameWindow
         glEnable (GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
-        lastFrameTime = getCurrentTime();
+        lastFrameTime = glfwGetTime();
 	}
 
 	public int getWidth()
@@ -94,17 +98,12 @@ public class GameWindow
 		return height;
 	}
 
-	public long getCurrentTime()
-	{
-		return System.nanoTime()/1000000;
-	}
-
-	public long getLastFrameTime()
+	public double getLastFrameTime()
 	{
 		return lastFrameTime;
 	}
 
-	public float getDeltaTime()
+	public double getDeltaTime()
 	{
 		return deltaTime;
 	}
@@ -123,8 +122,8 @@ public class GameWindow
 	{
 		glfwSwapBuffers(window);
         glfwPollEvents(); 
-        long currentFrameTime = getCurrentTime();
-        deltaTime = (currentFrameTime - lastFrameTime)/1000f;
+        double currentFrameTime = glfwGetTime();
+        deltaTime = currentFrameTime - lastFrameTime;
         lastFrameTime = currentFrameTime;
 	}
 

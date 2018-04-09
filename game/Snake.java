@@ -11,7 +11,7 @@ import game.BodyPart;
 
 public class Snake extends Entity
 {
-	private List<Entity> body;
+	
 	private int score;
 	private float speed;
 	private int length;
@@ -19,7 +19,6 @@ public class Snake extends Entity
 	private float bodyPartDistance;
 	private int turn;
 	private Vector3f translation;
-
 	private boolean zoom;
 	private Vector3f targetPosition;
 
@@ -28,7 +27,6 @@ public class Snake extends Entity
 	public Snake(Vector3f position, RawQuad rawQuad, Texture texture)
 	{
 		super(position, rawQuad, texture);
-		body = new ArrayList<Entity>();
 		this.setScore(0);
 		this.setSpeed(0);
 		this.setLength(0);
@@ -329,8 +327,6 @@ public class Snake extends Entity
 		return targetPosition;
 	}
 
-
-
 	public void setTargetPosition(Vector3f targetPosition) {
 		this.targetPosition = targetPosition;
 	}
@@ -346,5 +342,10 @@ public class Snake extends Entity
 	
 	public void slowDown() {
 		zoom = false;
+	}
+	
+	public void setColor(Vector3f color)
+	{
+		this.color = color;
 	}
 }

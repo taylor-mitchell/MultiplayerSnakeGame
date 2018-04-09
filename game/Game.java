@@ -2,12 +2,16 @@ package game;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.Timer;
 
 import org.lwjgl.glfw.GLFW;
+
+import com.mysql.jdbc.TimeUtil;
 
 import InputHandler.Input;
 import graphics.Camera;
@@ -49,16 +53,17 @@ public class Game
 		
 		// Create the shader and the renderer after we have an opengl context
 		shader = new Shader();
-		renderer = new Renderer(camera, display, shader);
+		renderer = new Renderer(camera, shader);
 		
 		RawQuad rawQuad = QuadLoader.loadToVAO(new Quad());
 		Texture texture = new Texture("game/placeholder.png");
 		Texture snakeTexture = new Texture("game/single_stroke.png");
 		Texture foodTexture = new Texture("game/trippy.png");
-		snake = new Snake(pos, rawQuad, snakeTexture, 100);
+		snake = new Snake(pos, rawQuad, snakeTexture, 1);
 		snake.setSpeed(0.05f);
 		snake.setBodyPartDistance(0.5f);
 		snake.setDirection(Math.PI);
+		snake.setColor(new Vector3f(.23f, .18f, .43f) );
 		
 		foodCount = 1000;
 		
@@ -74,7 +79,7 @@ public class Game
 	public void runGameLoop()
 	{
 		entitiesToRender = new ArrayList<>();
-		entitiesToRender.addAll(snake.getBody());
+		entitiesToRender.add(snake);
 		entitiesToRender.addAll(foodList);
 		while(!display.windowShouldClose())
 		{
@@ -96,21 +101,19 @@ public class Game
 			}
 			snake.keyUpdate();
 			camera.setPosition(snake.getBody().get(0).getPosition());
-			display.updateDisplay();
+			
 			renderer.prepare();
 			renderer.renderEntities(entitiesToRender);
+			display.updateDisplay();
+			System.out.println(String.format("Elpased Time: %f seconds", display.getDeltaTime()));
 		}
+		
 		display.destroy();
 	}
 	
 	public synchronized void setEntitiesToRender(List<Entity> entities)
 	{
 		
-	}
-	
-	public synchronized List<Entity> getEntitiesToRender()
-	{
-		return entitiesToRender;
 	}
 	
 	public static void main(String[] args)
