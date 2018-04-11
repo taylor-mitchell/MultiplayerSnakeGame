@@ -1,6 +1,8 @@
 package math;
 
-public class Vector3f 
+import java.io.Serializable;
+
+public class Vector3f implements Serializable
 {
 	private float x;
 	private float y;

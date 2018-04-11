@@ -7,10 +7,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import game.Entity;
-import game.Food;
-import game.Snake;
 import math.Transform;
-import math.Vector3f;
 
 public class Renderer 
 {
@@ -57,21 +54,22 @@ public class Renderer
 	
 	/**
 	 * Render the entities in batch(Same rawQuad)
-	 * @param entitiesToRender The list of entities to render
+	 * @param entitiesToRender - The list of entities to render
 	 */
 	public void renderEntities(List<Entity> entitiesToRender)
 	{
-		if (entitiesToRender.isEmpty())
+		if (entitiesToRender == null || entitiesToRender.isEmpty())
 			return;
-		
-		//
-		activeShader.start();
-		RawQuad rawQuad = entitiesToRender.get(0).getRawQuad();
-		bindModel(rawQuad);
 		
 		int numberOfBodyParts;
 		List<Entity> parts;
+		RawQuad rawQuad = entitiesToRender.get(0).getRawQuad();
 		final int vertexCount = rawQuad.getVertexCount();
+		
+		activeShader.start();
+		
+		// Assuming all body parts use the same RawQuad, we only need to bind it once
+		bindModel(rawQuad);
 		
 		for (Entity entity : entitiesToRender)
 		{
@@ -80,8 +78,10 @@ public class Renderer
 			parts = entity.getBody();
 			numberOfBodyParts = parts.size();
 			activeShader.loadColor(entity.getColor());
-
+			
+			// Assuming all body parts use the same texture, we only need to bind it once
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, entity.getTexture().getId());
+			
 			for (int i = 0; i < numberOfBodyParts; i++)
 			{
 				entity = parts.get(i);
@@ -89,12 +89,14 @@ public class Renderer
 				GL11.glDrawElements(GL11.GL_TRIANGLES, vertexCount, GL11.GL_UNSIGNED_INT, 0);
 			}
 		}
+		
 		unbindModel();
+		
 		activeShader.stop();
 	}
 	
 	/**
-	 * Clear the screen buffer before drawing again
+	 * Clear the screen buffer
 	 */
 	public void prepare()
 	{

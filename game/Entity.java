@@ -1,5 +1,6 @@
 package game;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import graphics.RawQuad;
 import graphics.Texture;
 import math.Vector3f;
 
-public abstract class Entity 
+public abstract class Entity implements Serializable
 {
 	protected Vector3f color;
 	protected List<Entity> body;
@@ -44,6 +45,19 @@ public abstract class Entity
 		scale.add(amount);
 	}
 
+	public void setBodyScale(Vector3f scale)
+	{
+		this.scale = scale;
+		
+		for (Entity entity : body)
+			entity.setScale(scale);
+	}
+	
+	public void setScale(Vector3f scale)
+	{
+		this.scale = scale;
+	}
+	
 	public Vector3f getPosition()
 	{
 		return position;

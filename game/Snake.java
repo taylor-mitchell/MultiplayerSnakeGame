@@ -6,7 +6,6 @@ import java.util.List;
 import graphics.RawQuad;
 import graphics.Texture;
 import math.Vector3f;
-import game.BodyPart;
 
 
 public class Snake extends Entity

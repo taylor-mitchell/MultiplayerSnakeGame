@@ -1,41 +1,69 @@
 package client;
 
+import game.Game;
+import game.GameData;
 import ocsf.client.AbstractClient;
 
 public class Client extends AbstractClient
 {
 	private ClientGUI gui;
-	
+	private Game game;
+
 	public Client(String host, int port)
 	{
 		super(host, port);
-		// TODO Auto-generated constructor stub
 	}
 
-	public Client(ClientGUI gui)
-	{
-		// TODO Auto-generated constructor stub
-		super("",0);
-	}
-	
 	@Override
 	protected void handleMessageFromServer(Object arg0)
 	{
-		// TODO Auto-generated method stub
-		
+		synchronized (game)
+		{
+			GameData data = (GameData) arg0;
+			game.setGameOver(data.isGameOver());
+			game.setCurrentScore(data.getCurrentCore());
+			game.setEntitiesToRender(data.getWorldEntities());
+			game.setCameraLocation(data.getCameraLocation());
+			game.notify();
+		}
 	}
-	
+
 	@Override
 	protected void connectionException(Exception exception)
 	{
-		// TODO Auto-generated method stub
 		super.connectionException(exception);
+		onGameOver();
 	}
-	
+
+	@Override
+	protected void connectionClosed()
+	{
+		super.connectionClosed();
+		onGameOver();
+	}
+
 	@Override
 	protected void connectionEstablished()
 	{
-		// TODO Auto-generated method stub
 		super.connectionEstablished();
+	}
+	
+	private void onGameOver()
+	{
+		synchronized (game)
+		{
+			game.setGameOver(true);
+			game.notify();
+		}
+	}
+
+	public void setGui(ClientGUI gui)
+	{
+		this.gui = gui;
+	}
+
+	public void setGame(Game game)
+	{
+		this.game = game;
 	}
 }
