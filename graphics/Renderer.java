@@ -7,24 +7,31 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import game.Entity;
+import game.Food;
 import math.Transform;
 
 public class Renderer 
 {
 	private final Camera activeCamera;
 	private final Shader activeShader;
+	private final RawQuad rawQuad;
+	private final Texture snakeTexture;
+	private final Texture foodTexture;
 	
 	public Renderer(Camera activeCamera, Shader activeShader)
 	{
 		this.activeCamera = activeCamera;
 		this.activeShader = activeShader;
+		this.rawQuad = QuadLoader.loadToVAO(new Quad());
+		this.snakeTexture = new Texture("game/single_stroke.png");
+		this.foodTexture = new Texture("game/trippy.png");
 	}
 
 	/**
 	 * Bind vertex array object of entity to render
 	 * @param rawQuad RawQuad of the entity to render
 	 */
-	private void bindModel(RawQuad rawQuad)
+	private void bindModel()
 	{
 		GL30.glBindVertexArray(rawQuad.getVaoID());
         GL20.glEnableVertexAttribArray(0);
@@ -63,13 +70,12 @@ public class Renderer
 		
 		int numberOfBodyParts;
 		List<Entity> parts;
-		RawQuad rawQuad = entitiesToRender.get(0).getRawQuad();
 		final int vertexCount = rawQuad.getVertexCount();
 		
 		activeShader.start();
 		
 		// Assuming all body parts use the same RawQuad, we only need to bind it once
-		bindModel(rawQuad);
+		bindModel();
 		
 		for (Entity entity : entitiesToRender)
 		{
@@ -79,8 +85,16 @@ public class Renderer
 			numberOfBodyParts = parts.size();
 			activeShader.loadColor(entity.getColor());
 			
-			// Assuming all body parts use the same texture, we only need to bind it once
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, entity.getTexture().getId());
+			if (entity instanceof Food)
+			{
+				// Assuming all body parts use the same texture, we only need to bind it once
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, foodTexture.getId());
+			}
+			else
+			{
+				// Assuming all body parts use the same texture, we only need to bind it once
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, snakeTexture.getId());
+			}
 			
 			for (int i = 0; i < numberOfBodyParts; i++)
 			{

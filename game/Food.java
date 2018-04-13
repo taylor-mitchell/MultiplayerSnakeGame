@@ -12,9 +12,9 @@ public class Food extends Entity
 	private boolean shouldGrow;
 	private boolean eaten;
 	
-	public Food(Vector3f position, RawQuad rawQuad, Texture texture, int worth, double radius)
+	public Food(Vector3f position, int worth, double radius)
 	{
-		super(position, rawQuad, texture, radius);
+		super(position, radius);
 		this.worth = worth;
 		body.add(this);
 	}
@@ -27,5 +27,12 @@ public class Food extends Entity
 	public int getWorth()
 	{
 		return worth;
+	}
+	
+	@Override
+	public Food clone() throws CloneNotSupportedException 
+	{
+		Food clonedFood = new Food(position.clone(), worth, radius);
+		return clonedFood;
 	}
 }

@@ -23,9 +23,14 @@ public class Snake extends Entity
 
 	private int foodToAdd;
 	
-	public Snake(Vector3f position, RawQuad rawQuad, Texture texture)
+	public Snake()
 	{
-		super(position, rawQuad, texture);
+		super();
+	}
+	
+	public Snake(Vector3f position)
+	{
+		super(position);
 		this.setScore(0);
 		this.setSpeed(0);
 		this.setLength(0);
@@ -36,10 +41,9 @@ public class Snake extends Entity
 		this.setTargetPosition(new Vector3f(0, 0, 0));		
 	}
 	
-	public Snake(Vector3f position, RawQuad rawQuad, Texture texture, int length)
+	public Snake(Vector3f position, int length)
 	{
-		super(position, rawQuad, texture);
-		body = new ArrayList<Entity>();
+		super(position);
 		this.setScore(0);
 		this.setSpeed(0);
 		this.setLength(length);
@@ -50,9 +54,9 @@ public class Snake extends Entity
 		this.setTargetPosition(new Vector3f(0, 0, 0));		
 		this.setRadius(0.3);
 		
-		body.add(new BodyPart(new Vector3f(position.getX(), position.getY(), position.getZ()), this.getRawQuad(), this.getTexture()));		
+		body.add(new BodyPart(new Vector3f(position.getX(), position.getY(), position.getZ())));		
 		for (int i = 1; i < length; i++) {
-			body.add(new BodyPart(new Vector3f(i *  bodyPartDistance, position.getY(), position.getZ()), this.getRawQuad(), this.getTexture(), this.getRadius()));
+			body.add(new BodyPart(new Vector3f(i *  bodyPartDistance, position.getY(), position.getZ()), this.getRadius()));
 		}
 	}
 
@@ -80,7 +84,7 @@ public class Snake extends Entity
 			for(Entity en : body) {
 				en.setRadius(this.getRadius());
 			}
-			body.add(new BodyPart(body.get(length - 1).getPosition(),this.getRawQuad(), this.getTexture(), this.getRadius()));			
+			body.add(new BodyPart(body.get(length - 1).getPosition(), this.getRadius()));			
 			foodToAdd--;
 			length++;
 		}
@@ -346,5 +350,29 @@ public class Snake extends Entity
 	public void setColor(Vector3f color)
 	{
 		this.color = color;
+	}
+	
+	@Override
+	public Snake clone() throws CloneNotSupportedException 
+	{
+		Snake clonedSnake = new Snake(position.clone(), length);
+		clonedSnake.setScore(score);
+		clonedSnake.setSpeed(speed);
+		clonedSnake.setLength(length);
+		clonedSnake.setDirection(direction);
+		clonedSnake.setBodyPartDistance(bodyPartDistance);
+		clonedSnake.setTurn(turn);
+		clonedSnake.setZoom(zoom);
+		clonedSnake.setTargetPosition(targetPosition.clone());		
+		clonedSnake.setRadius(0.3);
+		
+		clonedSnake.body.add(new BodyPart(position.clone()));
+		for (int i = 1; i < length; i++) {
+			clonedSnake.body.add(new BodyPart(body.get(i).getPosition().clone(), radius));
+		}
+		
+		clonedSnake.foodToAdd = foodToAdd;
+		
+		return clonedSnake;
 	}
 }

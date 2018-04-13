@@ -6,17 +6,23 @@ import math.Vector3f;
 
 public class BodyPart extends Entity{
 
-	public BodyPart(Vector3f position, RawQuad rawQuad, Texture texture) {
-		super(position, rawQuad, texture);
+	public BodyPart(Vector3f position) {
+		super(position);
 		
 	}
-	public BodyPart(Vector3f position, RawQuad rawQuad, Texture texture, double radius) {
-		super(position, rawQuad, texture, radius);
+	
+	public BodyPart(Vector3f position, double radius) {
+		super(position, radius);
 		
 	}
 
 	public void animate() {
 		// TODO Auto-generated method stub
-		
+	}
+	
+	@Override
+	public Entity clone() throws CloneNotSupportedException 
+	{
+		throw new CloneNotSupportedException();
 	}
 }

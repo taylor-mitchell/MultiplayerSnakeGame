@@ -29,10 +29,7 @@ public class Game
 	private Camera camera;
 	private Shader shader;
 	private List<Entity> entitiesToRender;
-	private Snake snake;
-	private List<Food> foodList;
 	private boolean gameOver;
-	private int foodCount;
 	private Client client;
 	private int currentScore;
 
@@ -44,12 +41,12 @@ public class Game
 	public Game(Client client)
 	{
 		this.client = client;
+		this.client.setGame(this);
 	}
 
 	public void initGame()
 	{
-		Vector3f pos = new Vector3f(0, 0, 0);
-		camera = new Camera(pos);
+		camera = new Camera(new Vector3f(0, 0, 0));
 
 		// Create an window and allow opengl operations
 		display = new GameWindow("Multiplayer Snake Game", 1280, 640);
@@ -58,31 +55,6 @@ public class Game
 		shader = new Shader();
 		renderer = new Renderer(camera, shader);
 
-		RawQuad rawQuad = QuadLoader.loadToVAO(new Quad());
-		Texture snakeTexture = new Texture("game/single_stroke.png");
-		Texture foodTexture = new Texture("game/trippy.png");
-		snake = new Snake(pos, rawQuad, snakeTexture, 1);
-		snake.setSpeed(0.05f);
-		snake.setBodyPartDistance(0.5f);
-		snake.setDirection(Math.PI);
-		snake.setColor(new Vector3f(.23f, .18f, .43f));
-		// snake.setBodyScale(new Vector3f(.2f, .2f, 1));
-
-		foodCount = 1000;
-
-		foodList = new ArrayList<Food>();
-
-		for (int i = 0; i < foodCount; i++)
-		{
-			foodList.add(new Food(
-					new Vector3f((float) (Math.random() * 100.f - 50.f), (float) (Math.random() * 100.0f - 50.f), 0),
-					rawQuad, foodTexture, 2, 0.1));
-		}
-
-		entitiesToRender = new ArrayList<>();
-		entitiesToRender.add(snake);
-		entitiesToRender.addAll(foodList);
-
 		gameOver = false;
 		currentScore = 0;
 	}
@@ -90,13 +62,30 @@ public class Game
 	public void runGameLoop()
 	{
 		initGame();
-
+		try
+		{
+			client.openConnection();
+		} catch (IOException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			System.exit(-1);
+		}
+		
 		while (!display.windowShouldClose())
 		{
 			synchronized (this)
 			{
 				if (gameOver)
 				{
+					try
+					{
+						client.closeConnection();
+					} catch (IOException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					displayScore();
 					break;
 				}
@@ -106,16 +95,6 @@ public class Game
 					displayConnectionError();
 					displayScore();
 					break;
-				}
-
-				for (Food f : foodList)
-				{
-					if (f.collisionCheck(snake.getBody().get(0)))
-					{
-						snake.addToBody(f.getWorth());
-						f.setPosition(new Vector3f((float) (Math.random() * 100.f - 50.f),
-								(float) (Math.random() * 100.0f - 50.f), 0));
-					}
 				}
 
 				checkInput();
@@ -134,7 +113,7 @@ public class Game
 				}
 			}
 
-			System.out.println(String.format("Elpased Time: %f seconds", display.getDeltaTime()));
+			//System.out.println(String.format("Elpased Time: %f seconds", display.getDeltaTime()));
 		}
 
 		QuadLoader.cleanUp();
@@ -212,7 +191,7 @@ public class Game
 
 	public static void main(String[] args)
 	{
-		// Game game = new Game();
-		// game.runGameLoop();
+		Game game = new Game();
+		game.runGameLoop();
 	}
 }

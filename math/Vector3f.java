@@ -7,14 +7,14 @@ public class Vector3f implements Serializable
 	private float x;
 	private float y;
 	private float z;
-	
+
 	public Vector3f(Vector3f vec)
 	{
 		this.x = vec.x;
 		this.y = vec.y;
 		this.z = vec.z;
 	}
-	
+
 	public Vector3f(float x, float y, float z)
 	{
 		this.x = x;
@@ -51,7 +51,7 @@ public class Vector3f implements Serializable
 	{
 		this.z = z;
 	}
-	
+
 	public Vector3f add(Vector3f rhs)
 	{
 		x += rhs.x;
@@ -59,7 +59,7 @@ public class Vector3f implements Serializable
 		z += rhs.z;
 		return this;
 	}
-	
+
 	public Vector3f sub(Vector3f rhs)
 	{
 		x -= rhs.x;
@@ -67,7 +67,7 @@ public class Vector3f implements Serializable
 		z -= rhs.z;
 		return this;
 	}
-	
+
 	public Vector3f mul(Vector3f rhs)
 	{
 		x *= rhs.x;
@@ -75,7 +75,7 @@ public class Vector3f implements Serializable
 		z *= rhs.z;
 		return this;
 	}
-	
+
 	public Vector3f flip()
 	{
 		return new Vector3f(-x, -y, -z);
@@ -87,7 +87,7 @@ public class Vector3f implements Serializable
 		// TODO Auto-generated method stub
 		return String.format("(%f, %f, %f)", x, y, z);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -95,4 +95,9 @@ public class Vector3f implements Serializable
 		return x == rhs.x && y == rhs.y && z == rhs.z;
 	}
 
+	@Override
+	public Vector3f clone()
+	{
+		return new Vector3f(x, y, z);
 	}
+}

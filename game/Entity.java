@@ -14,23 +14,24 @@ public abstract class Entity implements Serializable
 	protected List<Entity> body;
 	protected Vector3f position;
 	protected Vector3f scale;
-	protected RawQuad rawQuad;
-	protected Texture texture;
 	protected boolean playingOddAnimation;
 	protected boolean inPlay;
 	protected double radius;
 	
-	public Entity(Vector3f position, RawQuad rawQuad, Texture texture)
+	public Entity()
 	{
-		this(position, rawQuad, texture, 0);
+		this(new Vector3f(0, 0, 0), 0);
 	}
 	
-	public Entity(Vector3f position, RawQuad rawQuad, Texture texture, double radius) {
+	public Entity(Vector3f position)
+	{
+		this(position, 0);
+	}
+	
+	public Entity(Vector3f position, double radius) {
 		this.body = new ArrayList<Entity>();
 		this.position = position;
 		this.scale = new Vector3f(1, 1, 1);
-		this.rawQuad = rawQuad;
-		this.texture = texture;
 		this.radius = radius;
 		this.inPlay = true;
 	}
@@ -67,16 +68,6 @@ public abstract class Entity implements Serializable
 	public Vector3f getScale()
 	{
 		return scale;
-	}
-
-	public RawQuad getRawQuad()
-	{
-		return rawQuad;
-	}
-
-	public Texture getTexture()
-	{
-		return texture;
 	}
 
 	public boolean isPlayingOddAnimation()
@@ -129,4 +120,6 @@ public abstract class Entity implements Serializable
 	{
 		return color;
 	}
+	
+	public abstract Entity clone()  throws CloneNotSupportedException ;
 }
