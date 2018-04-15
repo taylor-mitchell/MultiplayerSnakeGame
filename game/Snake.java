@@ -10,7 +10,6 @@ import math.Vector3f;
 
 public class Snake extends Entity
 {
-	
 	private int score;
 	private float speed;
 	private int length;
@@ -20,6 +19,7 @@ public class Snake extends Entity
 	private Vector3f translation;
 	private boolean zoom;
 	private Vector3f targetPosition;
+	private float turnRadius;
 
 	private int foodToAdd;
 	
@@ -39,6 +39,7 @@ public class Snake extends Entity
 		this.setTurn(0);
 		this.setZoom(false);
 		this.setTargetPosition(new Vector3f(0, 0, 0));		
+		turnRadius = 0.005f;
 	}
 	
 	public Snake(Vector3f position, int length)
@@ -53,6 +54,7 @@ public class Snake extends Entity
 		this.setZoom(false);
 		this.setTargetPosition(new Vector3f(0, 0, 0));		
 		this.setRadius(0.3);
+		turnRadius = 0.005f;
 		
 		body.add(new BodyPart(new Vector3f(position.getX(), position.getY(), position.getZ())));		
 		for (int i = 1; i < length; i++) {
@@ -100,9 +102,9 @@ public class Snake extends Entity
 		if (inPlay) {
 			eat();
 			if (turn == 1) {
-				direction = direction + 0.01;
+				direction = direction + turnRadius;
 			}else if (turn == -1) {
-				direction = direction - 0.01;
+				direction = direction - turnRadius;
 			}
 			
 			body.get(0).translate(new Vector3f((float)(Math.cos(direction) * sp), (float)(Math.sin(direction) * sp), 0));

@@ -12,6 +12,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import client.Client;
+import client.LoginData;
 import graphics.Camera;
 import graphics.GameWindow;
 import graphics.Quad;
@@ -21,6 +22,7 @@ import graphics.Renderer;
 import graphics.Shader;
 import graphics.Texture;
 import math.Vector3f;
+import server.UserMessage;
 
 public class Game
 {
@@ -32,6 +34,7 @@ public class Game
 	private boolean gameOver;
 	private Client client;
 	private int currentScore;
+	private UserMessage message;
 
 	public Game()
 	{
@@ -46,6 +49,8 @@ public class Game
 
 	public void initGame()
 	{
+		message = new UserMessage(0, false);
+		
 		camera = new Camera(new Vector3f(0, 0, 0));
 
 		// Create an window and allow opengl operations
@@ -70,6 +75,13 @@ public class Game
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			System.exit(-1);
+		}
+		
+		try {
+			client.sendToServer(new LoginData("taylor", "sucks"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 		
 		while (!display.windowShouldClose())
@@ -115,6 +127,13 @@ public class Game
 
 			//System.out.println(String.format("Elpased Time: %f seconds", display.getDeltaTime()));
 		}
+		
+		try {
+			client.sendToServer(new Boolean(false));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		QuadLoader.cleanUp();
 		display.destroy();
@@ -123,36 +142,45 @@ public class Game
 
 	private void checkInput()
 	{
+		UserMessage newMessage = new UserMessage(0, false);
 		int keyPressed;
 		if (display.isKeyPressed(GLFW_KEY_LEFT))
 		{
-			// snake.setTurn(1);
+			newMessage.setTurn(1);
 			keyPressed = GLFW_KEY_LEFT;
 		}
 		else if (display.isKeyPressed(GLFW_KEY_RIGHT))
 		{
-			// snake.setTurn(-1);
+			newMessage.setTurn(-1);
 			keyPressed = GLFW_KEY_LEFT;
+		}else {
+			newMessage.setTurn(0);
 		}
-		else if (display.isKeyPressed(GLFW_KEY_UP))
+		
+		
+		if (display.isKeyPressed(GLFW_KEY_UP))
 		{
-			// snake.speedUp();
+			newMessage.setZoom(true);
 			keyPressed = GLFW_KEY_LEFT;
 		}
 		else
 		{
-			// snake.setTurn(0);
-			// snake.slowDown();
+			newMessage.setZoom(false);
 			keyPressed = GLFW_KEY_UNKNOWN;
 		}
-
-		try
-		{
-			client.sendToServer(keyPressed);
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+		
+		//if (!newMessage.equals(message)) {
+			try
+			{
+				client.sendToServer(newMessage);
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			
+			//message.setTurn(newMessage.getTurn());
+			//message.setZoom(newMessage.isZoom());
+		//}
 
 		// snake.keyUpdate();
 		// camera.setPosition(snake.getBody().get(0).getPosition());
