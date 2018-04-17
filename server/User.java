@@ -27,10 +27,10 @@ public class User
 	{
 		this.loginInfo = loginInfo;
 		snake = new Snake(new Vector3f((float)(Math.random() * 100.f - 50.f), (float)(Math.random() * 100.f - 50.f), 0), 10);
-		snake.setSpeed(0.005f);
+		snake.setSpeed(0.05f);
 		snake.setBodyPartDistance(0.5f);
 		snake.setDirection(Math.PI);
-		snake.setColor(new Vector3f(.23f, .18f, .43f));
+		snake.setColor(new Vector3f((float)Math.random(), (float)Math.random(), (float)Math.random()));
 		snake.setInPlay(true);
 		loginStatus = true;
 	}

@@ -100,4 +100,11 @@ public class Vector3f implements Serializable
 	{
 		return new Vector3f(x, y, z);
 	}
+
+	public void add(float x, float y, float z)
+	{
+		this.x += x;
+		this.y += y;
+		this.z += z;
+	}
 }

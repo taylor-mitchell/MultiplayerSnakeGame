@@ -153,7 +153,7 @@ public class Database
 		return null;
 	}
 	
-	public ArrayList<String> queryUsername(String query)
+	public ArrayList<String> queryUsername()
 	{
 		ArrayList queryString = new ArrayList<String>();
 		try

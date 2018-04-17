@@ -34,7 +34,6 @@ public class Game
 	private boolean gameOver;
 	private Client client;
 	private int currentScore;
-	private UserMessage message;
 
 	public Game()
 	{
@@ -49,12 +48,10 @@ public class Game
 
 	public void initGame()
 	{
-		message = new UserMessage(0, false);
-		
 		camera = new Camera(new Vector3f(0, 0, 0));
 
 		// Create an window and allow opengl operations
-		display = new GameWindow("Multiplayer Snake Game", 1280, 640);
+		display = new GameWindow("Multiplayer Snake Game", 854, 480);
 
 		// Create the shader and the renderer after we have an opengl context
 		shader = new Shader();
@@ -90,14 +87,6 @@ public class Game
 			{
 				if (gameOver)
 				{
-					try
-					{
-						client.closeConnection();
-					} catch (IOException e)
-					{
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
 					displayScore();
 					break;
 				}
@@ -131,6 +120,15 @@ public class Game
 		try {
 			client.sendToServer(new Boolean(false));
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		try
+		{
+			client.closeConnection();
+		} catch (IOException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -188,7 +186,7 @@ public class Game
 
 	private void displayScore()
 	{
-		JOptionPane.showMessageDialog(null, String.format("You scored %d", 0), "Game Over",
+		JOptionPane.showMessageDialog(null, String.format("You scored %d", currentScore), "Game Over",
 				JOptionPane.INFORMATION_MESSAGE);
 	}
 

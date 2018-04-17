@@ -41,6 +41,10 @@ public abstract class Entity implements Serializable
 		position.add(amount);
 	}
 	
+	public void translate(float x, float y) {
+		this.position.add(x, y, 0);
+	}
+	
 	public void addScale(Vector3f amount)
 	{
 		scale.add(amount);
@@ -104,9 +108,13 @@ public abstract class Entity implements Serializable
 
 	public void setPosition(Vector3f vector3f) {
 		this.position = vector3f;
-		
 	}
 
+	public void setPosition(float x, float y) {
+		this.position.setX(x);
+		this.position.setX(y);
+	}
+	
 	public List<Entity> getBody()
 	{
 		return body;
