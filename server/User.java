@@ -27,7 +27,7 @@ public class User
 	{
 		this.loginInfo = loginInfo;
 		snake = new Snake(new Vector3f((float)(Math.random() * 100.f - 50.f), (float)(Math.random() * 100.f - 50.f), 0), 10);
-		snake.setSpeed(0.01f);
+		snake.setSpeed(0.005f);
 		snake.setBodyPartDistance(0.5f);
 		snake.setDirection(Math.PI);
 		snake.setColor(new Vector3f(.23f, .18f, .43f));
@@ -55,12 +55,7 @@ public class User
 		return snake;
 	}
 	
-	public void sendGameData(GameData gd) {
-		try {
-			c2c.sendToClient(gd);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void sendGameData(GameData gd) throws IOException {
+		c2c.sendToClient(gd);
 	}
 }

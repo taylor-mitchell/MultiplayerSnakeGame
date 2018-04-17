@@ -11,7 +11,9 @@ import java.util.Map;
 
 import javax.swing.Timer;
 
+import client.CreateAccountData;
 import client.LoginData;
+import database.Database;
 import game.Entity;
 import game.Food;
 import game.Game;
@@ -27,6 +29,7 @@ import ocsf.server.ConnectionToClient;
 
 public class Server extends AbstractServer
 {
+	private Database database;
 	private ServerGUI serverGUI;
 	private Map<Long, User> connectedUsers;
 	Vector3f cameraLocation;
@@ -34,26 +37,19 @@ public class Server extends AbstractServer
 	private ActionListener timerListener;
 	private List<Food> foodList;
 	private int foodNum;
+	private boolean databaseCheck;
+	
 	
 
 	public Server(int port)
 	{
 		super(port);
 		
-		timerListener = new ActionListener() {
-
-			public void actionPerformed(ActionEvent arg0) {
-				update();
-				
-			}
-			
-		};
-		
 		try {
 			this.listen();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			error("Server couldn't start listening");
+			error(e.getMessage());
 		}
 		init();
 	}
@@ -61,6 +57,20 @@ public class Server extends AbstractServer
 	public Server(ServerGUI serverGUI)
 	{
 		super(0);
+		
+		try {
+			this.listen();
+		} catch (IOException e) {
+			error("Server couldn't start listening");
+			error(e.getMessage());
+		}
+		init();
+	}
+	
+	private void init() {		
+		databaseCheck = false;
+		
+		//This listener controls what the timer does 
 		timerListener = new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
@@ -69,58 +79,61 @@ public class Server extends AbstractServer
 			}
 			
 		};
-		try {
-			this.listen();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
+		if (databaseCheck) {
+			database = new Database();
 		}
-		init();
-	}
-	
-	private void init() {
+		
 		connectedUsers = new HashMap<Long, User>();
 		snakeList = new ArrayList<Snake>();
 		
+		//FoodNum is the total amount of food initialized in the game
 		foodNum = 50;
 		foodList = new ArrayList<Food>();
 		
+		//Instantiates all of the food in random locations between -50 and 50
+		//in the X and Y directions
 		for (int i = 0; i < foodNum; i++) {
-			foodList.add(new Food(new Vector3f((float)(Math.random() * 100.f - 50.f), (float)(Math.random() * 100.f - 50.f), 0), 10, 0.3f));
+			foodList.add(new Food(new Vector3f(
+					(float)(Math.random() * 100.f - 50.f), 
+					(float)(Math.random() * 100.f - 50.f),
+					0), 
+					10, 0.3f));
 		}
 		
+		//Starts the timer so that the game updates at 60 times a second
 		Timer timer = new Timer(1000/60, timerListener);
 		timer.start();
 	}
 
-	@Override
 	protected void handleMessageFromClient(Object arg0, ConnectionToClient arg1)
 	{
-		if(arg0 instanceof LoginData) {
-			User newUser = new User(arg1);
-			newUser.logIn((LoginData)arg0);
-			synchronized(this){
-				connectedUsers.put(arg1.getId(), newUser);	
-				snakeList.add(newUser.getSnake());
-				this.notify();
-			}
-		}else if (arg0 instanceof UserMessage) {
-			UserMessage msg = (UserMessage)arg0;
-			Snake userSnake = connectedUsers.get(arg1.getId()).getSnake();
-			userSnake.setTurn(msg.getTurn());
-			userSnake.setZoom(msg.isZoom());
-			snakeList.add(userSnake);
-		}else if (arg0 instanceof Boolean) {
-			connectedUsers.get(arg1.getId()).logOut();
+		if(arg0 instanceof CreateAccountData) {
+			
+			//Handles all of the creating account functions
+			createAccount((CreateAccountData)arg0, arg1);
 		}
-		
+		if(arg0 instanceof LoginData) {
+			
+			//Handles all of the logging in functions
+			logIn((LoginData)arg0, arg1);
+		}else if (arg0 instanceof UserMessage) {
+			
+			//Handles any message from a user in-game
+			handleUserMessage((UserMessage)arg0, arg1);
+			
+		}else if (arg0 instanceof Boolean) {
+			
+			//Right now the server expects a 'false' if the user logs out
+			connectedUsers.get(arg1.getId()).logOut();
+		}		
 	}
 
-	@Override
 	protected void listeningException(Throwable exception)
 	{
-		// TODO Auto-generated method stub
 		super.listeningException(exception);
+		error("There was a listening exception");
+		error(exception.getMessage());
 	}
 
 	@Override
@@ -152,8 +165,156 @@ public class Server extends AbstractServer
 		
 	}
 	
+	public void createAccount(CreateAccountData createData, ConnectionToClient c2c) {
+		
+		//Checks that the passwords match
+		if (databaseCheck) {
+			if (!createData.getPassword1().equals(createData.getPassword2())) {
+				
+				try {
+					c2c.sendToClient("Passwords don't match");
+				} catch (IOException e) {
+					error("Couldn't send 'passwords don't match' message to client");
+					error(e.getMessage());
+				}
+				
+			//Checks to see if the username is taken	
+			}else if (database.queryUsername().contains(createData.getUserame())) {
+				
+				try {
+					c2c.sendToClient("Username taken");
+				} catch (IOException e) {
+					error("Couldn't send 'username taken' message to client");
+					error(e.getMessage());
+				}
+				
+			//Adds the new username to the database	
+			}else if (!database.queryUsername().contains(createData.getUserame())){
+				database.executeDML(createData.getUserame(), createData.getPassword1());
+				try {
+					c2c.sendToClient("Account created");
+				} catch (IOException e) {
+					error("Couldn't send 'account created' message to client");
+					error(e.getMessage());
+				}
+				
+			//Hopefully handles any other errors
+			}else {
+				
+				error("Something weird went wrong with creating an account");
+				
+				try {
+					c2c.sendToClient("Something weird went wrong");
+				} catch (IOException e) {
+					error("Couldn't send weird message to client");
+					error(e.getMessage());
+				}
+				
+			}
+		}else {
+			try {
+				c2c.sendToClient("Account created");
+			} catch (IOException e) {
+				error("Couldn't send 'account created' message to client");
+				error(e.getMessage());
+			}
+		}
+		
+		return;		
+	}
+	
+	public void logIn(LoginData loginData, ConnectionToClient c2c) {
+		
+		//Gets the password from the database if its there
+		
+		if (databaseCheck) {
+			ArrayList<String> password = database.getUserPass(loginData.getUserame());
+			
+			//If nothing is returned, then that should mean that the username doesn't exist
+			if (password.size() == 0) {
+				
+				try {
+					c2c.sendToClient("Username doesn't exist");
+				} catch (IOException e) {
+					error("Couldn't send 'username doesn't exist' message to client");
+					error(e.getMessage());
+				}
+				
+			//If the password is wrong	
+			}else if (!password.contains(loginData.getPassword())) {
+				
+				try {
+					c2c.sendToClient("Wrong password");
+				} catch (IOException e) {
+					error("Couldn't send 'wrong password' message to client");
+					error(e.getMessage());
+				}
+				
+			//If the password is right	
+			}else if (password.contains(loginData.getPassword())){
+				
+				//Make a new user on the server
+				User newUser = new User(c2c);
+				newUser.logIn(loginData);
+				
+				//Add that user to the list of connected users and 
+				//add its snake to the list of snakes.  I was getting concurrent
+				//access errors without the synchronized thing.
+				synchronized(this){
+					connectedUsers.put(c2c.getId(), newUser);	
+					snakeList.add(newUser.getSnake());
+					this.notify();
+				}			
+				
+			//Hopefully handles all other errors
+			}else {
+				
+				error("Something weird went wrong!");
+				
+				try {
+					c2c.sendToClient("Something weird went wrong...");
+				} catch (IOException e) {
+					error("Couldn't send weird message to client");
+					error(e.getMessage());
+				}
+			}
+		}else {
+			//Make a new user on the server
+			User newUser = new User(c2c);
+			newUser.logIn(loginData);
+			
+			//Add that user to the list of connected users and 
+			//add its snake to the list of snakes.  I was getting concurrent
+			//access errors without the synchronized thing.
+			synchronized(this){
+				connectedUsers.put(c2c.getId(), newUser);	
+				snakeList.add(newUser.getSnake());
+				this.notify();
+			}	
+		}
+		
+		return;
+	}
+	
+	//This class should handle all message from users who are in-game
+	public void handleUserMessage(UserMessage msg, ConnectionToClient c2c) {
+		
+		//Updates the users snake
+		Snake userSnake = connectedUsers.get(c2c.getId()).getSnake();
+		userSnake.setTurn(msg.getTurn());
+		userSnake.setZoom(msg.isZoom());
+		
+		//I'm not sure why I had this here but I am afraid to delete it. 
+		//If it doesn't work, try uncommenting this back in.
+		//snakeList.add(userSnake);
+	}
+	
+	//Handles the entire update cycle
 	public void update() {
+		
 		long start = System.currentTimeMillis();
+		
+		//Needs to be synchronized so that there aren't any concurrent access errors
 		synchronized(this) {
 			
 			checkCollisions();
@@ -162,14 +323,21 @@ public class Server extends AbstractServer
 			
 			sendData();
 		}
+		
 		System.out.println("Server elapsed time: " + ((System.currentTimeMillis() - start) / 1000.f) + "s");
 	}
 
-
-
+	//Checks all snake-snake and snake-food collisions
+	//Could probably be more efficient
 	private void checkCollisions()
 	{
+		//I keep a list of dead snakes so that I can 
+		//'kill' them at the end of the collision check phase.
+		//This is just so nothing unexpected happens
 		ArrayList<Snake> deadSnakes = new ArrayList<Snake>();
+		
+		//For every snake, check every other snake for collisions
+		//and then check for food collisions
 		for(Snake snake1 : snakeList) {
 			for(Snake snake2 : snakeList) {
 				if (snake1 != snake2) {
@@ -181,53 +349,87 @@ public class Server extends AbstractServer
 			
 			for(Food food : foodList) {
 				if (food.collisionCheck(snake1.getBody().get(0))) {
+					
+					//Adds new body parts to the snake
 					snake1.addToBody(food.getWorth());
+					
+					//Moves the food to a new location
 					food.setPosition(new Vector3f((float)(Math.random() * 100.f - 50.f), (float)(Math.random() * 100.f - 50.f), 0));
 				}
 			}
 		}
 		
+		//Kills all of the dead snakes
 		for(Snake snake : deadSnakes) {
 			snake.setInPlay(false);
 		}
 	}
 	
+	//After the collision check phase, then all movement can be handled
+	//without worrying about collisions.
 	private void updateSnakes()
 	{
+		//Calls the update function for all of the snakes
 		for (Snake snake : snakeList) {
 			snake.keyUpdate();
 		}
 	}
 	
+	//Sends the relevant data to all of the users
 	private void sendData() {
+		
+		//for all users
 		for (Long userId : connectedUsers.keySet()) {
+			
+			//checks if the user is logged in
 			if (connectedUsers.get(userId).isLoggedIn()) {
+				
 				User user = connectedUsers.get(userId);
+				
+				//This is the user's camera position
 				Vector3f userPosition = user.getSnake().getBody().get(0).getPosition().clone();
 				
+				//Need to make a new list of entities because otherwise it won't serialize correctly
 				List<Entity> clonedEntitiesToRender = new ArrayList<>();
 				
-				/*for (Snake snake : snakeList) {
+				//This for loop will make sure that only the snakes that are nearby are sent to the user
+				//If we change the client game view size, then we need to change the 8.0f
+				for (Snake snake : snakeList) {
 					for (Entity bp : snake.getBody()) {
 						if (Math.hypot(userPosition.getX() - bp.getPosition().getX(), userPosition.getY() - bp.getPosition().getY()) < 8.0f) {
 							try {
-								clonedEntitiesToRender.add(bp.clone());
+								clonedEntitiesToRender.add(snake.clone());
 							} catch (CloneNotSupportedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								error("There was a cloning problem");
+								error(e.getMessage());
 							}
+							break;
 						}
 					}
 					
-				}*/
+				}
 				
-				for (Snake snake : snakeList) {
+				//This for loop will make sure that only the food that is nearby is sent to the user
+				//If we change the client game view size, then we need to change the 8.0f
+				for (Food food : foodList) {
+					if (Math.hypot(userPosition.getX() - food.getPosition().getX(), userPosition.getY() - food.getPosition().getY()) < 8.0f) {
+						try {
+							clonedEntitiesToRender.add(food.clone());
+						} catch (CloneNotSupportedException e) {
+							error("There was a cloning problem");
+							error(e.getMessage());
+						}
+					}
+				}
+				
+				//These for loops will send all snakes and all food to every user
+				/*for (Snake snake : snakeList) {
 					try {
 						clonedEntitiesToRender.add(snake.clone());
 
 					} catch (CloneNotSupportedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						error("There was a cloning problem");
+						error(e.getMessage());
 					}
 				}
 				
@@ -235,21 +437,40 @@ public class Server extends AbstractServer
 					try {
 						clonedEntitiesToRender.add(food.clone());
 					} catch (CloneNotSupportedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						error("There was a cloning problem");
+						error(e.getMessage());
 					}
-				}
+				}*/
 				
-				user.sendGameData(new GameData(clonedEntitiesToRender, userPosition, 0, !user.getSnake().isInPlay()));
+				//Sends the game data to the user
+				//Right now the score won't change
+				try {
+					user.sendGameData(new GameData(clonedEntitiesToRender, userPosition, 0, !user.getSnake().isInPlay()));
+				} catch (IOException e) {
+					error("Couldn't send game data to client");
+					error(e.getMessage());
+				}
 			}
 		}
 	}
+	
+	//Should handle all error messages
+	private void error(String msg) {
+		System.out.println(msg);
+	}
+	
+	
 
 	public static void main(String args[])
 	{
 		Server server = new Server(8300);
 
-		/*
+		
+		
+		
+		/*******************************************************************************************
+		 * All of this is test code that works so I don't want to delete it yet just in case... :) *
+		 * *****************************************************************************************
 		try
 		{
 			server.listen();
