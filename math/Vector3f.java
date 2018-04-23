@@ -59,6 +59,12 @@ public class Vector3f implements Serializable
 		z += rhs.z;
 		return this;
 	}
+	
+	public void add(float x, float y, float z) {
+		this.x += x;
+		this.y += y;
+		this.z += z;
+	}
 
 	public Vector3f sub(Vector3f rhs)
 	{
@@ -99,12 +105,5 @@ public class Vector3f implements Serializable
 	public Vector3f clone()
 	{
 		return new Vector3f(x, y, z);
-	}
-
-	public void add(float x, float y, float z)
-	{
-		this.x += x;
-		this.y += y;
-		this.z += z;
 	}
 }

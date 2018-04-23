@@ -26,7 +26,7 @@ public class User
 	public void logIn(LoginData loginInfo)
 	{
 		this.loginInfo = loginInfo;
-		snake = new Snake(new Vector3f((float)(Math.random() * 100.f - 50.f), (float)(Math.random() * 100.f - 50.f), 0), 10);
+		snake = new Snake(new Vector3f((float)(Math.random() * 1000.f - 500.f), (float)(Math.random() * 1000.f - 500.f), 0), 10);
 		snake.setSpeed(0.05f);
 		snake.setBodyPartDistance(0.5f);
 		snake.setDirection(Math.PI);

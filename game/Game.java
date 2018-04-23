@@ -34,24 +34,29 @@ public class Game
 	private boolean gameOver;
 	private Client client;
 	private int currentScore;
+	private UserMessage message;
+	private boolean ready;
 
 	public Game()
 	{
-		this(new Client("localhost", 8300));
+		this(new Client());
 	}
 
 	public Game(Client client)
 	{
 		this.client = client;
 		this.client.setGame(this);
+		ready = false;
 	}
 
 	public void initGame()
 	{
+		message = new UserMessage(0, false);
+		
 		camera = new Camera(new Vector3f(0, 0, 0));
 
 		// Create an window and allow opengl operations
-		display = new GameWindow("Multiplayer Snake Game", 854, 480);
+		display = new GameWindow("Multiplayer Snake Game", 1280, 640);
 
 		// Create the shader and the renderer after we have an opengl context
 		shader = new Shader();
@@ -64,6 +69,7 @@ public class Game
 	public void runGameLoop()
 	{
 		initGame();
+		
 		try
 		{
 			client.openConnection();
@@ -74,44 +80,58 @@ public class Game
 			System.exit(-1);
 		}
 		
-		try {
+		/*try {
 			client.sendToServer(new LoginData("taylor", "sucks"));
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
+		}*/
+	
 		
 		while (!display.windowShouldClose())
 		{
-			synchronized (this)
-			{
-				if (gameOver)
+			if (ready) {
+				synchronized (this)
 				{
-					displayScore();
-					break;
+					
+					if (gameOver)
+					{
+						try
+						{
+							client.closeConnection();
+						} catch (IOException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						displayScore();
+						break;
+					}
+	
+					if (!client.isConnected())
+					{
+						displayConnectionError();
+						displayScore();
+						break;
+					}
+	
+					checkInput();
+	
+					renderer.prepare();
+	
+					renderer.renderEntities(entitiesToRender);
+					display.updateDisplay();
+					try
+					{
+						wait();
+					} catch (InterruptedException e)
+					{
+						gameOver = true;
+						e.printStackTrace();
+					}
+					
 				}
-
-				if (!client.isConnected())
-				{
-					displayConnectionError();
-					displayScore();
-					break;
-				}
-
-				checkInput();
-
-				renderer.prepare();
-
-				renderer.renderEntities(entitiesToRender);
-				display.updateDisplay();
-				try
-				{
-					wait();
-				} catch (InterruptedException e)
-				{
-					gameOver = true;
-					e.printStackTrace();
-				}
+			
 			}
 
 			//System.out.println(String.format("Elpased Time: %f seconds", display.getDeltaTime()));
@@ -120,15 +140,6 @@ public class Game
 		try {
 			client.sendToServer(new Boolean(false));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		try
-		{
-			client.closeConnection();
-		} catch (IOException e)
-		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -167,7 +178,7 @@ public class Game
 			keyPressed = GLFW_KEY_UNKNOWN;
 		}
 		
-		//if (!newMessage.equals(message)) {
+		if (!newMessage.equals(message)) {
 			try
 			{
 				client.sendToServer(newMessage);
@@ -176,12 +187,9 @@ public class Game
 				e.printStackTrace();
 			}
 			
-			//message.setTurn(newMessage.getTurn());
-			//message.setZoom(newMessage.isZoom());
-		//}
-
-		// snake.keyUpdate();
-		// camera.setPosition(snake.getBody().get(0).getPosition());
+			message.setTurn(newMessage.getTurn());
+			message.setZoom(newMessage.isZoom());
+		}
 	}
 
 	private void displayScore()
@@ -214,10 +222,14 @@ public class Game
 	{
 		camera.setPosition(cameraLocation);
 	}
-
-	public static void main(String[] args)
-	{
+	
+	public void setReady(boolean ready) {
+		this.ready = ready;
+	}
+	
+	public static void main(String args[]) {
 		Game game = new Game();
 		game.runGameLoop();
 	}
+
 }

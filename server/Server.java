@@ -88,17 +88,17 @@ public class Server extends AbstractServer
 		snakeList = new ArrayList<Snake>();
 		
 		//FoodNum is the total amount of food initialized in the game
-		foodNum = 50;
+		foodNum = 5000;
 		foodList = new ArrayList<Food>();
 		
 		//Instantiates all of the food in random locations between -50 and 50
 		//in the X and Y directions
 		for (int i = 0; i < foodNum; i++) {
 			foodList.add(new Food(new Vector3f(
-					(float)(Math.random() * 100.f - 50.f), 
-					(float)(Math.random() * 100.f - 50.f),
+					(float)(Math.random() * 1000.f - 500.f), 
+					(float)(Math.random() * 1000.f - 500.f),
 					0), 
-					10, 0.3f));
+					1, 0.3f));
 		}
 		
 		//Starts the timer so that the game updates at 60 times a second
@@ -118,15 +118,10 @@ public class Server extends AbstractServer
 			//Handles all of the logging in functions
 			logIn((LoginData)arg0, arg1);
 		}else if (arg0 instanceof UserMessage) {
-
-			UserMessage msg = (UserMessage)arg0;
-			Snake userSnake = connectedUsers.get(arg1.getId()).getSnake();
-			userSnake.setTurn(msg.getTurn());
-			userSnake.setZoom(msg.isZoom());
-			//snakeList.add(userSnake);
+			
 			//Handles any message from a user in-game
 			handleUserMessage((UserMessage)arg0, arg1);
-
+			
 		}else if (arg0 instanceof Boolean) {
 			
 			//Right now the server expects a 'false' if the user logs out
@@ -184,7 +179,7 @@ public class Server extends AbstractServer
 				}
 				
 			//Checks to see if the username is taken	
-			}else if (database.queryUsername().contains(createData.getUserame())) {
+			}else if (database.queryUsername().contains(createData.getUsername())) {
 				
 				try {
 					c2c.sendToClient("Username taken");
@@ -194,8 +189,8 @@ public class Server extends AbstractServer
 				}
 				
 			//Adds the new username to the database	
-			}else if (!database.queryUsername().contains(createData.getUserame())){
-				database.executeDML(createData.getUserame(), createData.getPassword1());
+			}else if (!database.queryUsername().contains(createData.getUsername())){
+				database.executeDML(createData.getUsername(), createData.getPassword1());
 				try {
 					c2c.sendToClient("Account created");
 				} catch (IOException e) {
@@ -233,7 +228,7 @@ public class Server extends AbstractServer
 		//Gets the password from the database if its there
 		
 		if (databaseCheck) {
-			ArrayList<String> password = database.getUserPass(loginData.getUserame());
+			ArrayList<String> password = database.getUserPass(loginData.getUsername());
 			
 			//If nothing is returned, then that should mean that the username doesn't exist
 			if (password.size() == 0) {
@@ -284,6 +279,12 @@ public class Server extends AbstractServer
 				}
 			}
 		}else {
+			try {
+				c2c.sendToClient("Login successful");
+			} catch (IOException e) {
+				error("Couldn't send login successful message to client");
+				error(e.getMessage());
+			}
 			//Make a new user on the server
 			User newUser = new User(c2c);
 			newUser.logIn(loginData);
@@ -327,11 +328,9 @@ public class Server extends AbstractServer
 			updateSnakes();
 			
 			sendData();
-			
-			this.notify();
 		}
 		
-		System.out.println("Server elapsed time: " + ((System.currentTimeMillis() - start) / 1000.f) + "s");
+		//System.out.println("Server elapsed time: " + ((System.currentTimeMillis() - start) / 1000.f) + "s");
 	}
 
 	//Checks all snake-snake and snake-food collisions
@@ -350,6 +349,7 @@ public class Server extends AbstractServer
 				if (snake1 != snake2) {
 					if (snake1.collisionCheck(snake2.getBody().get(0))){
 						deadSnakes.add(snake2);
+						snake1.addToScore(snake2.getLength());
 					}
 				}
 			}
@@ -359,10 +359,9 @@ public class Server extends AbstractServer
 					
 					//Adds new body parts to the snake
 					snake1.addToBody(food.getWorth());
-					food.setPosition((float)(Math.random() * 100.f - 50.f), (float)(Math.random() * 100.f - 50.f));
-
+					
 					//Moves the food to a new location
-					food.setPosition(new Vector3f((float)(Math.random() * 100.f - 50.f), (float)(Math.random() * 100.f - 50.f), 0));
+					food.setPosition((float)(Math.random() * 100.f - 50.f), (float)(Math.random() * 100.f - 50.f));
 				}
 			}
 		}
@@ -386,12 +385,6 @@ public class Server extends AbstractServer
 	//Sends the relevant data to all of the users
 	private void sendData() {
 		
-		List<Entity> clonedEntitiesToRender = new ArrayList<>();
-		
-		/*for (Snake snake : snakeList) {
-			for (Entity bp : snake.getBody()) {
-				if (Math.hypot(userPosition.getX() - bp.getPosition().getX(), userPosition.getY() - bp.getPosition().getY()) < 8.0f) {
-=======
 		//for all users
 		for (Long userId : connectedUsers.keySet()) {
 			
@@ -410,7 +403,7 @@ public class Server extends AbstractServer
 				//If we change the client game view size, then we need to change the 8.0f
 				for (Snake snake : snakeList) {
 					for (Entity bp : snake.getBody()) {
-						if (Math.hypot(userPosition.getX() - bp.getPosition().getX(), userPosition.getY() - bp.getPosition().getY()) < 8.0f) {
+						if (Math.hypot(userPosition.getX() - bp.getPosition().getX(), userPosition.getY() - bp.getPosition().getY()) < 10.0f) {
 							try {
 								clonedEntitiesToRender.add(snake.clone());
 							} catch (CloneNotSupportedException e) {
@@ -426,7 +419,7 @@ public class Server extends AbstractServer
 				//This for loop will make sure that only the food that is nearby is sent to the user
 				//If we change the client game view size, then we need to change the 8.0f
 				for (Food food : foodList) {
-					if (Math.hypot(userPosition.getX() - food.getPosition().getX(), userPosition.getY() - food.getPosition().getY()) < 8.0f) {
+					if (Math.hypot(userPosition.getX() - food.getPosition().getX(), userPosition.getY() - food.getPosition().getY()) < 10.0f) {
 						try {
 							clonedEntitiesToRender.add(food.clone());
 						} catch (CloneNotSupportedException e) {
@@ -449,42 +442,18 @@ public class Server extends AbstractServer
 				
 				for (Food food : foodList) {
 					try {
-						clonedEntitiesToRender.add(bp.clone());
+						clonedEntitiesToRender.add(food.clone());
 					} catch (CloneNotSupportedException e) {
 						error("There was a cloning problem");
 						error(e.getMessage());
 					}
-				}
-			}
-		}*/
-		
-		for (Snake snake : snakeList) {
-			try {
-				clonedEntitiesToRender.add(snake.clone());
-
-			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		for (Food food : foodList) {
-			try {
-				clonedEntitiesToRender.add(food.clone());
-			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		for (Long userId : connectedUsers.keySet()) {
-			User user = connectedUsers.get(userId);
-			if (user.isLoggedIn()) {
-				Vector3f userPosition = user.getSnake().getBody().get(0).getPosition().clone();
+				}*/
+				
 				//Sends the game data to the user
 				//Right now the score won't change
+				System.out.println(clonedEntitiesToRender.size());
 				try {
-					user.sendGameData(new GameData(clonedEntitiesToRender, userPosition, 0, !user.getSnake().isInPlay()));
+					user.sendGameData(new GameData(clonedEntitiesToRender, userPosition, user.getSnake().getScore(), !user.getSnake().isInPlay()));
 				} catch (IOException e) {
 					error("Couldn't send game data to client");
 					error(e.getMessage());
@@ -503,9 +472,6 @@ public class Server extends AbstractServer
 	public static void main(String args[])
 	{
 		Server server = new Server(8300);
-		
-		/*
-=======
 
 		
 		
@@ -513,7 +479,6 @@ public class Server extends AbstractServer
 		/*******************************************************************************************
 		 * All of this is test code that works so I don't want to delete it yet just in case... :) *
 		 * *****************************************************************************************
->>>>>>> 32aa08402757e6c6555393c5f5e0bd0a8be741a4
 		try
 		{
 			server.listen();

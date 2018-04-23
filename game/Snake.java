@@ -39,7 +39,7 @@ public class Snake extends Entity
 		this.setTurn(0);
 		this.setZoom(false);
 		this.setTargetPosition(new Vector3f(0, 0, 0));		
-		turnRadius = 0.005f;
+		turnRadius = 0.05f;
 	}
 	
 	public Snake(Vector3f position, int length)
@@ -54,7 +54,7 @@ public class Snake extends Entity
 		this.setZoom(false);
 		this.setTargetPosition(new Vector3f(0, 0, 0));		
 		this.setRadius(0.3);
-		turnRadius = 0.005f;
+		turnRadius = 0.05f;
 		
 		body.add(new BodyPart(new Vector3f(position.getX(), position.getY(), position.getZ())));		
 		for (int i = 1; i < length; i++) {
@@ -83,9 +83,9 @@ public class Snake extends Entity
 	private void eat() {
 		if (foodToAdd > 0) {
 			
-			for(Entity en : body) {
+			/*for(Entity en : body) {
 				en.setRadius(this.getRadius());
-			}
+			}*/
 			body.add(new BodyPart(body.get(length - 1).getPosition(), this.getRadius()));			
 			foodToAdd--;
 			length++;
@@ -107,8 +107,8 @@ public class Snake extends Entity
 				direction = direction - turnRadius;
 			}
 			
-			body.get(0).translate((float)(Math.cos(direction) * sp), (float)(Math.sin(direction) * sp));
-			
+			body.get(0).translate(new Vector3f((float)(Math.cos(direction) * sp), (float)(Math.sin(direction) * sp), 0));
+			//body.get(0).translate((float)(Math.cos(direction) * sp), (float)(Math.sin(direction) * sp));
 			this.position = body.get(0).getPosition();
 			double newDirection;
 			for (int i = 1; i < length; i++) {
@@ -123,13 +123,16 @@ public class Snake extends Entity
 					}else {
 						newDirection = Math.PI / 2;
 					}	
-					body.get(i).setPosition((float)(pos1.getX() + Math.cos(newDirection) * bodyPartDistance), (float)(pos1.getY() + Math.sin(newDirection) * bodyPartDistance));
+					body.get(i).setPosition(new Vector3f((float)(pos1.getX() + Math.cos(newDirection) * bodyPartDistance), (float)(pos1.getY() + Math.sin(newDirection) * bodyPartDistance), 0));
+					//body.get(i).setPosition((float)(pos1.getX() + Math.cos(newDirection) * bodyPartDistance), (float)(pos1.getY() + Math.sin(newDirection) * bodyPartDistance));
 				}else if (deltaX < 0){
 					newDirection = Math.atan(deltaY/ deltaX);
-					body.get(i).setPosition((float)(pos1.getX() + Math.cos(newDirection) * bodyPartDistance), (float)(pos1.getY() + Math.sin(newDirection) * bodyPartDistance));
+					body.get(i).setPosition(new Vector3f((float)(pos1.getX() + Math.cos(newDirection) * bodyPartDistance), (float)(pos1.getY() + Math.sin(newDirection) * bodyPartDistance), 0));
+					//body.get(i).setPosition((float)(pos1.getX() + Math.cos(newDirection) * bodyPartDistance), (float)(pos1.getY() + Math.sin(newDirection) * bodyPartDistance));
 				}else {
 					newDirection = -Math.atan(deltaY/ deltaX);
-					body.get(i).setPosition((float)(pos1.getX() - Math.cos(newDirection) * bodyPartDistance), (float)(pos1.getY() + Math.sin(newDirection) * bodyPartDistance));
+					body.get(i).setPosition(new Vector3f((float)(pos1.getX() - Math.cos(newDirection) * bodyPartDistance), (float)(pos1.getY() + Math.sin(newDirection) * bodyPartDistance), 0));
+					//body.get(i).setPosition((float)(pos1.getX() - Math.cos(newDirection) * bodyPartDistance), (float)(pos1.getY() + Math.sin(newDirection) * bodyPartDistance));
 				}
 			}
 		}
@@ -296,7 +299,9 @@ public class Snake extends Entity
 		return bodyPartDistance;
 	}
 
-
+	public void addToScore(int s) {
+		score += s;
+	}
 
 	public void setBodyPartDistance(float bodyPartDistance) {
 		this.bodyPartDistance = bodyPartDistance;
@@ -339,6 +344,7 @@ public class Snake extends Entity
 
 	public void addToBody(int f) {
 		foodToAdd = foodToAdd + f;
+		addToScore(f);
 	}
 	
 	public void speedUp() {
@@ -368,7 +374,6 @@ public class Snake extends Entity
 		clonedSnake.setTargetPosition(targetPosition.clone());		
 		clonedSnake.setRadius(0.3);
 		clonedSnake.setColor(color.clone());
-		
 		clonedSnake.body.add(new BodyPart(position.clone()));
 		for (int i = 1; i < length; i++) {
 			clonedSnake.body.add(new BodyPart(body.get(i).getPosition().clone(), radius));

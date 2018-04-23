@@ -24,7 +24,7 @@ public class Renderer
 		this.activeShader = activeShader;
 		this.rawQuad = QuadLoader.loadToVAO(new Quad());
 		this.snakeTexture = new Texture("game/single_stroke.png");
-		this.foodTexture = new Texture("game/trippy.png");
+		this.foodTexture = new Texture("game/paint-spot.png");
 	}
 
 	/**

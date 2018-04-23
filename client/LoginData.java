@@ -4,17 +4,18 @@ import java.io.Serializable;
 
 public class LoginData implements Serializable
 {
-	private String userame;
+	private String username;
 	private String password;
 	
-	public LoginData(String userame, String password)
+	public LoginData(String username, String password)
 	{
-		// TODO Auto-generated constructor stub
+		this.username = username;
+		this.password = password;
 	}
 
-	public String getUserame()
+	public String getUsername()
 	{
-		return userame;
+		return username;
 	}
 
 	public String getPassword()
