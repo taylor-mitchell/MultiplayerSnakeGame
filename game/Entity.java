@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import graphics.RawQuad;
-import graphics.Texture;
 import math.Vector3f;
 
 public abstract class Entity implements Serializable

@@ -77,9 +77,9 @@ public class Database
 	    System.out.println("Gets here");
 	}
 
-	public ArrayList getUserPass(String query)
+	public ArrayList<String> getUserPass(String query)
 	{
-		ArrayList queryString = new ArrayList<String>();
+		ArrayList<String> queryString = new ArrayList<String>();
 		try 
 		{
 			Statement stmt = conn.createStatement();
@@ -94,7 +94,6 @@ public class Database
 			
 			ResultSetMetaData rmd;
 			rmd = rs.getMetaData();
-			int no_columns = rmd.getColumnCount();
 			//store each string in the array list
 			int i = 1;
 			while(rs.next()) 
@@ -118,7 +117,7 @@ public class Database
 	
 	public ArrayList<String> query(String query)
 	{
-		ArrayList queryString = new ArrayList<String>();
+		ArrayList<String> queryString = new ArrayList<String>();
 		try 
 		{
 			Statement stmt = conn.createStatement();
@@ -132,7 +131,6 @@ public class Database
 			// delimited string field1, field2,...field3
 			ResultSetMetaData rmd;
 			rmd = rs.getMetaData();
-			int no_columns = rmd.getColumnCount();
 			//store each string in the array list
 			int i = 1;
 			while(rs.next()) 
@@ -155,7 +153,7 @@ public class Database
 	
 	public ArrayList<String> queryUsername()
 	{
-		ArrayList queryString = new ArrayList<String>();
+		ArrayList<String> queryString = new ArrayList<String>();
 		try
 		{
 			Statement stmt = conn.createStatement();
@@ -192,7 +190,7 @@ public class Database
 	
 	public ArrayList<String> queryPassword(String query)
 	{
-		ArrayList queryString = new ArrayList<String>();
+		ArrayList<String> queryString = new ArrayList<String>();
 		try
 		{
 			Statement stmt = conn.createStatement();
@@ -206,7 +204,6 @@ public class Database
 			// delimited string field1, field2,...field3
 			ResultSetMetaData rmd;
 			rmd = rs.getMetaData();
-			int no_columns = rmd.getColumnCount();
 			//store each string in the array list
 			int i = 1;
 			while(rs.next()) 
@@ -247,19 +244,18 @@ public class Database
 				return false;
 			
 			rmd = rs.getMetaData();
-			int no_columns = rmd.getColumnCount();
 			//store each string in the array list
-			int i = 1;
-			while(rs.next()) 
-			{
-				System.out.println("is this working");     
-			}
+			while(rs.next())
+				//Intentionally left blank
+				;
+			
 	      
 		  //return the arraylist containing the strings or null if no data found  
 		}
 		catch (SQLException sql)
 		{
 			System.out.println(sql);
+			return false;
 		}
 		
 		return true;

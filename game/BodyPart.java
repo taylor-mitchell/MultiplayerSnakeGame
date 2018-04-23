@@ -1,7 +1,5 @@
 package game;
 
-import graphics.RawQuad;
-import graphics.Texture;
 import math.Vector3f;
 
 public class BodyPart extends Entity{

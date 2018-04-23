@@ -1,8 +1,11 @@
 package client;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class ClientGUI extends JFrame
 {
@@ -76,8 +79,9 @@ public class ClientGUI extends JFrame
   }
   
   public void initGameScreen() {
-	  gc = new GameControl(container, client);
+	  gc = new GameControl(client);
 	  view4 = new GamePanel(gc);
+	  gc.setContainer(view4);
   }
   
   public void error(String msg) {
@@ -91,5 +95,4 @@ public class ClientGUI extends JFrame
   public void setScore(Integer score) {
 	  view4.setScore(score);
   } 
-
 }

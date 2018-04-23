@@ -3,7 +3,6 @@ package client;
 import java.awt.CardLayout;
 import java.io.IOException;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import game.Game;
@@ -28,7 +27,6 @@ public class Client extends AbstractClient
 		gui = new ClientGUI(this);
 	}
 	
-
 	@Override
 	protected void handleMessageFromServer(Object arg0)
 	{
@@ -113,10 +111,27 @@ public class Client extends AbstractClient
 	
 	public void setGameReady(boolean ready) {
 		try {
-			this.sendToServer(true);
+			this.sendToServer(ready);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		game.setReady(ready);
+		
+		synchronized(game)
+		{
+			game.setReady(ready);
+			game.notify();
+		}
+	}
+	
+	public static void main(String[] args)
+	{
+		Client client = new Client();
+		try
+		{
+			client.openConnection();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

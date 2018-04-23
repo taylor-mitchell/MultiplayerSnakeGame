@@ -2,29 +2,27 @@ package game;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_UNKNOWN;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import client.Client;
-import client.LoginData;
+import client.GamePanel;
 import graphics.Camera;
 import graphics.GameWindow;
-import graphics.Quad;
 import graphics.QuadLoader;
-import graphics.RawQuad;
 import graphics.Renderer;
 import graphics.Shader;
-import graphics.Texture;
 import math.Vector3f;
 import server.UserMessage;
 
-public class Game
+public class Game implements Runnable
 {
 	private GameWindow display;
 	private Renderer renderer;
@@ -36,16 +34,13 @@ public class Game
 	private int currentScore;
 	private UserMessage message;
 	private boolean ready;
+	private GamePanel gamePanel;
 
-	public Game()
-	{
-		this(new Client());
-	}
-
-	public Game(Client client)
+	public Game(Client client, GamePanel gamePanel)
 	{
 		this.client = client;
 		this.client.setGame(this);
+		this.gamePanel = gamePanel;
 		ready = false;
 	}
 
@@ -66,34 +61,16 @@ public class Game
 		currentScore = 0;
 	}
 
-	public void runGameLoop()
+	@Override
+	public void run()
 	{
 		initGame();
-		
-		try
-		{
-			client.openConnection();
-		} catch (IOException e1)
-		{
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			System.exit(-1);
-		}
-		
-		/*try {
-			client.sendToServer(new LoginData("taylor", "sucks"));
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}*/
-	
-		
+
 		while (!display.windowShouldClose())
 		{
-			if (ready) {
-				synchronized (this)
-				{
-					
+			synchronized (this)
+			{
+				if (ready) {
 					if (gameOver)
 					{
 						try
@@ -104,17 +81,17 @@ public class Game
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						displayScore();
 						break;
 					}
-	
+					
 					if (!client.isConnected())
 					{
 						displayConnectionError();
-						displayScore();
 						break;
 					}
 	
+					updateScore();
+					
 					checkInput();
 	
 					renderer.prepare();
@@ -131,18 +108,12 @@ public class Game
 					}
 					
 				}
-			
 			}
+		}
 
-			//System.out.println(String.format("Elpased Time: %f seconds", display.getDeltaTime()));
-		}
+		//System.out.println(String.format("Elpased Time: %f seconds", display.getDeltaTime()));
 		
-		try {
-			client.sendToServer(new Boolean(false));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		client.setGameReady(false);
 
 		QuadLoader.cleanUp();
 		display.destroy();
@@ -152,16 +123,13 @@ public class Game
 	private void checkInput()
 	{
 		UserMessage newMessage = new UserMessage(0, false);
-		int keyPressed;
 		if (display.isKeyPressed(GLFW_KEY_LEFT))
 		{
 			newMessage.setTurn(1);
-			keyPressed = GLFW_KEY_LEFT;
 		}
 		else if (display.isKeyPressed(GLFW_KEY_RIGHT))
 		{
 			newMessage.setTurn(-1);
-			keyPressed = GLFW_KEY_LEFT;
 		}else {
 			newMessage.setTurn(0);
 		}
@@ -170,12 +138,10 @@ public class Game
 		if (display.isKeyPressed(GLFW_KEY_UP))
 		{
 			newMessage.setZoom(true);
-			keyPressed = GLFW_KEY_LEFT;
 		}
 		else
 		{
 			newMessage.setZoom(false);
-			keyPressed = GLFW_KEY_UNKNOWN;
 		}
 		
 		if (!newMessage.equals(message)) {
@@ -192,10 +158,14 @@ public class Game
 		}
 	}
 
-	private void displayScore()
+	private void updateScore()
 	{
-		JOptionPane.showMessageDialog(null, String.format("You scored %d", currentScore), "Game Over",
-				JOptionPane.INFORMATION_MESSAGE);
+		SwingUtilities.invokeLater( new Runnable() {
+			@Override
+			public void run() {
+				gamePanel.setScore(currentScore);
+			}
+		});
 	}
 
 	private void displayConnectionError()
@@ -226,10 +196,4 @@ public class Game
 	public void setReady(boolean ready) {
 		this.ready = ready;
 	}
-	
-	public static void main(String args[]) {
-		Game game = new Game();
-		game.runGameLoop();
-	}
-
 }

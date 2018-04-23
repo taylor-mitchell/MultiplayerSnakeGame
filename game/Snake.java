@@ -1,10 +1,7 @@
 package game;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import graphics.RawQuad;
-import graphics.Texture;
 import math.Vector3f;
 
 

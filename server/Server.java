@@ -1,6 +1,5 @@
 package server;
 
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -16,13 +15,8 @@ import client.LoginData;
 import database.Database;
 import game.Entity;
 import game.Food;
-import game.Game;
 import game.GameData;
 import game.Snake;
-import graphics.Quad;
-import graphics.QuadLoader;
-import graphics.RawQuad;
-import graphics.Texture;
 import math.Vector3f;
 import ocsf.server.AbstractServer;
 import ocsf.server.ConnectionToClient;
