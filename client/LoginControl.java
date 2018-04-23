@@ -41,6 +41,7 @@ public class LoginControl implements ActionListener
     {
       // Get the username and password the user entered.
       LoginPanel loginPanel = (LoginPanel)container.getComponent(1);
+      CardLayout cardLayout = (CardLayout)container.getLayout();
       LoginData data = new LoginData(loginPanel.getUsername(), loginPanel.getPassword());
       
       // Check the validity of the information locally first.
@@ -56,7 +57,15 @@ public class LoginControl implements ActionListener
 			
 			e.printStackTrace();
 		}
+      	
+      	GamePanel gp = (GamePanel)container.getComponent(3);
+      	gp.setUsername(data.getUsername());
+      	gp.setScore(0);
+      	
+      	cardLayout.show(container, "4");
       }
+      
+     
      
     }
   }

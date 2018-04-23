@@ -53,12 +53,12 @@ public class Snake extends Entity
 		this.setTurn(0);
 		this.setZoom(false);
 		this.setTargetPosition(new Vector3f(0, 0, 0));		
-		this.setRadius(0.3);
-		turnRadius = 0.05f;
+		this.setRadius(0.5);
+		turnRadius = 0.03f;
 		
 		body.add(new BodyPart(new Vector3f(position.getX(), position.getY(), position.getZ())));		
 		for (int i = 1; i < length; i++) {
-			body.add(new BodyPart(new Vector3f(i *  bodyPartDistance, position.getY(), position.getZ()), this.getRadius()));
+			body.add(new BodyPart(new Vector3f(i *  -1 * bodyPartDistance, position.getY(), position.getZ()), this.getRadius()));
 		}
 	}
 

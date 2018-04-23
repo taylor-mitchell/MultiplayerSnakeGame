@@ -98,7 +98,7 @@ public class Server extends AbstractServer
 					(float)(Math.random() * 1000.f - 500.f), 
 					(float)(Math.random() * 1000.f - 500.f),
 					0), 
-					1, 0.3f));
+					1, 0.5f));
 		}
 		
 		//Starts the timer so that the game updates at 60 times a second
@@ -124,8 +124,15 @@ public class Server extends AbstractServer
 			
 		}else if (arg0 instanceof Boolean) {
 			
+			if ((Boolean)arg0 == true) {
+				play(arg1);
+			}else {
+				
+			snakeList.remove(connectedUsers.get(arg1.getId()).getSnake());
+			
 			//Right now the server expects a 'false' if the user logs out
 			connectedUsers.get(arg1.getId()).logOut();
+			}
 		}		
 	}
 
@@ -155,6 +162,15 @@ public class Server extends AbstractServer
 	{
 		// TODO Auto-generated method stub
 		super.serverClosed();
+	}
+	
+	protected void clientDisconnected(ConnectionToClient c2c) {
+		User user = connectedUsers.get(c2c.getId());
+		
+		if (user != null) {
+			snakeList.remove(user.getSnake());
+			connectedUsers.remove(c2c.getId());
+		}
 	}
 
 	@Override
@@ -294,7 +310,7 @@ public class Server extends AbstractServer
 			//access errors without the synchronized thing.
 			synchronized(this){
 				connectedUsers.put(c2c.getId(), newUser);	
-				snakeList.add(newUser.getSnake());
+				//snakeList.add(newUser.getSnake());
 				this.notify();
 			}	
 		}
@@ -315,6 +331,11 @@ public class Server extends AbstractServer
 		//snakeList.add(userSnake);
 	}
 	
+	public void play(ConnectionToClient c2c) {
+		connectedUsers.get(c2c.getId()).play();
+		snakeList.add(connectedUsers.get(c2c.getId()).getSnake());
+	}
+	
 	//Handles the entire update cycle
 	public void update() {
 		
@@ -330,7 +351,7 @@ public class Server extends AbstractServer
 			sendData();
 		}
 		
-		//System.out.println("Server elapsed time: " + ((System.currentTimeMillis() - start) / 1000.f) + "s");
+		System.out.println("Server elapsed time: " + ((System.currentTimeMillis() - start) / 1000.f) + "s");
 	}
 
 	//Checks all snake-snake and snake-food collisions
@@ -451,7 +472,7 @@ public class Server extends AbstractServer
 				
 				//Sends the game data to the user
 				//Right now the score won't change
-				System.out.println(clonedEntitiesToRender.size());
+
 				try {
 					user.sendGameData(new GameData(clonedEntitiesToRender, userPosition, user.getSnake().getScore(), !user.getSnake().isInPlay()));
 				} catch (IOException e) {

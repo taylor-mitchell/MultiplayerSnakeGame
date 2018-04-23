@@ -1,6 +1,7 @@
 package client;
 
 import java.awt.CardLayout;
+import java.io.IOException;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,7 +18,7 @@ public class Client extends AbstractClient
 	private CardLayout cardLayout;
 	
 	public Client() {
-		this("192.168.50.11", 8300);
+		this("localhost", 8300);
 	}
 
 	public Client(String host, int port)
@@ -33,7 +34,7 @@ public class Client extends AbstractClient
 	{
 		if (arg0 instanceof String) {
 			if (((String)arg0).equals("Login successful")) {
-				game.setReady(true);
+				//game.setReady(true);
 			}
 		}else {
 			synchronized (game)
@@ -43,8 +44,11 @@ public class Client extends AbstractClient
 				game.setCurrentScore(data.getCurrentCore());
 				game.setEntitiesToRender(data.getWorldEntities());
 				game.setCameraLocation(data.getCameraLocation());
+				gui.setScore(data.getCurrentCore());
 				game.notify();
 			}
+			
+			
 		}
 	}
 
@@ -105,5 +109,14 @@ public class Client extends AbstractClient
 
 	public void setCardLayout(CardLayout cardLayout) {
 		this.cardLayout = cardLayout;
+	}
+	
+	public void setGameReady(boolean ready) {
+		try {
+			this.sendToServer(true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		game.setReady(ready);
 	}
 }
