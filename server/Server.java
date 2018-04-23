@@ -124,6 +124,8 @@ public class Server extends AbstractServer
 				
 			snakeList.remove(connectedUsers.get(arg1.getId()).getSnake());
 			
+			//database.saveScore(connectedUsers.get(arg1.getId()).getUsername(), connectedUsers.get(arg1.getId()).getScore();
+			
 			//Right now the server expects a 'false' if the user logs out
 			connectedUsers.get(arg1.getId()).logOut();
 			}
@@ -160,6 +162,8 @@ public class Server extends AbstractServer
 	
 	protected void clientDisconnected(ConnectionToClient c2c) {
 		User user = connectedUsers.get(c2c.getId());
+		
+		//database.saveScore(user.getUsername(), user.getScore());
 		
 		if (user != null) {
 			snakeList.remove(user.getSnake());
@@ -263,16 +267,31 @@ public class Server extends AbstractServer
 			//If the password is right	
 			}else if (password.contains(loginData.getPassword())){
 				
+				try {
+					c2c.sendToClient("Login successful");
+				} catch (IOException e) {
+					error("Couldn't send login successful message to client");
+					error(e.getMessage());
+				}
 				//Make a new user on the server
 				User newUser = new User(c2c);
 				newUser.logIn(loginData);
+				
+//				int score = database.getScore(newUser.getUsername());
+//				try {
+//					c2c.sendToClient(score);
+//				catch(IOException e) {
+//					error("Couldn't send score to client");
+//					error(e.getMessage());
+//					
+//				}
 				
 				//Add that user to the list of connected users and 
 				//add its snake to the list of snakes.  I was getting concurrent
 				//access errors without the synchronized thing.
 				synchronized(this){
 					connectedUsers.put(c2c.getId(), newUser);	
-					snakeList.add(newUser.getSnake());
+					//snakeList.add(newUser.getSnake());
 					this.notify();
 				}			
 				
@@ -326,6 +345,7 @@ public class Server extends AbstractServer
 	}
 	
 	public void play(ConnectionToClient c2c) {
+		//int score = database.getScore(connectedUsers.get(
 		connectedUsers.get(c2c.getId()).play();
 		snakeList.add(connectedUsers.get(c2c.getId()).getSnake());
 	}
@@ -477,6 +497,7 @@ public class Server extends AbstractServer
 		}
 	}
 	
+	
 	//Should handle all error messages
 	private void error(String msg) {
 		System.out.println(msg);
@@ -486,7 +507,12 @@ public class Server extends AbstractServer
 
 	public static void main(String args[])
 	{
-		Server server = new Server(8300);
+		int port = 8300;
+		
+		if (args.length == 1) {
+			port = Integer.parseInt(args[0]);
+		}
+		Server server = new Server(port);
 
 		
 		

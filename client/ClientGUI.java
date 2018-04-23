@@ -95,4 +95,8 @@ public class ClientGUI extends JFrame
   public void setScore(Integer score) {
 	  view4.setScore(score);
   } 
+  
+//  public void setTopScore(Integer score) {
+//	  view4.setTopScore(score);
+//  }
 }

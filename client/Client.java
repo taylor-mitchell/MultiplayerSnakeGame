@@ -34,6 +34,8 @@ public class Client extends AbstractClient
 			if (((String)arg0).equals("Login successful")) {
 				//game.setReady(true);
 			}
+//		}else if (arg0 instanceof Integer){
+//			gui.setTopScore((Integer)arg0);
 		}else {
 			synchronized (game)
 			{
@@ -125,7 +127,15 @@ public class Client extends AbstractClient
 	
 	public static void main(String[] args)
 	{
-		Client client = new Client();
+		String host = "localhost";
+		int port = 8300;
+		
+		if (args.length == 2) {
+			host = args[0];
+			port = Integer.parseInt(args[1]);
+		}
+		
+		Client client = new Client(host, port);
 		try
 		{
 			client.openConnection();

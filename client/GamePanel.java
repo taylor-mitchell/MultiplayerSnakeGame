@@ -10,6 +10,7 @@ public class GamePanel extends JPanel{
 	
 	private GameControl gc;
 	private JLabel scoreLabel;
+//	private JLabel topScoreLabel;
 	private JButton play;
 	private JButton stop;
 	private JButton quit;
@@ -18,9 +19,11 @@ public class GamePanel extends JPanel{
 	public GamePanel(GameControl gc) {
 		this.gc = gc;
 		this.setLayout(new GridLayout(2, 1, 5, 5));
+//		this.setLayout(new GridLayout(3, 1, 5, 5));
 		
 		username = "";
 		scoreLabel = new JLabel("", JLabel.CENTER);
+//		topScoreLabel = new JLabel("", JLabel.CENTER);
 		JPanel buttonPanel = new JPanel();
 		
 		play = new JButton("Play");
@@ -38,6 +41,7 @@ public class GamePanel extends JPanel{
 		
 		
 		this.add(scoreLabel, BorderLayout.NORTH);
+//		this.add(topScoreLabel, BorderLayout.CENTER);
 		this.add(buttonPanel, BorderLayout.SOUTH);
 	}
 	
@@ -48,5 +52,9 @@ public class GamePanel extends JPanel{
 	public void setUsername(String username) {
 		this.username = username;
 	}
+	
+//	public void setTopScore(Integer score) {
+//		topScoreLabel.setText("Top Score: " + score.toString());
+//	}
 
 }
