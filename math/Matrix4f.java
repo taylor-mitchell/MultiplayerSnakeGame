@@ -9,6 +9,10 @@ public class Matrix4f
 		data = new float[4][4];
 	}
 	
+	public Matrix4f(float data[][]) {
+		this.data = data;
+	}
+	
 	public Matrix4f initIdentity()
 	{
 		data[0][0] = 1;     data[0][1] = 0;   data[0][2] = 0;   data[0][3] = 0;
@@ -70,7 +74,7 @@ public class Matrix4f
 		Matrix4f result = new Matrix4f();
         for (int i =0; i<4 ; i++){
             for (int j = 0; j<4 ; j++){
-                data[i][j] *= amount;
+                result.data[i][j] = data[i][j] * amount;
             }
         }
         return result;
@@ -94,5 +98,24 @@ public class Matrix4f
 	public void setEntry(int r, int c, float value)
 	{
 		data[r][c] = value;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(this == obj)
+			return true;
+		
+		Matrix4f rhs = (Matrix4f) obj;
+		for (int i = 0; i < rhs.data.length; i++)
+		{
+			for (int j = 0; j < rhs.data[i].length; j++)
+			{
+				if (data[i][j] != rhs.data[i][j])
+				{
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }

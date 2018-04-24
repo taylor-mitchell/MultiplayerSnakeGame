@@ -31,7 +31,9 @@ public class GameControl implements ActionListener{
 		}else if (command == "Stop") {
 			client.setGameReady(false);
 		}else if (command == "Quit") {
-			client.setGameReady(false);
+			if (game != null) {
+				client.setGameReady(false);
+			}
 			System.exit(0);
 		}		
 	}

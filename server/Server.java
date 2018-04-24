@@ -2,7 +2,14 @@ package server;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -123,8 +130,6 @@ public class Server extends AbstractServer
 				
 			snakeList.remove(connectedUsers.get(arg1.getId()).getSnake());
 			
-			//database.saveScore(connectedUsers.get(arg1.getId()).getUsername(), connectedUsers.get(arg1.getId()).getScore();
-			
 			//Right now the server expects a 'false' if the user logs out
 			connectedUsers.get(arg1.getId()).logOut();
 			}
@@ -162,7 +167,6 @@ public class Server extends AbstractServer
 	protected void clientDisconnected(ConnectionToClient c2c) {
 		User user = connectedUsers.get(c2c.getId());
 		
-		//database.saveScore(user.getUsername(), user.getScore());
 		
 		if (user != null) {
 			snakeList.remove(user.getSnake());
@@ -185,17 +189,17 @@ public class Server extends AbstractServer
 			if (!createData.getPassword1().equals(createData.getPassword2())) {
 				
 				try {
-					c2c.sendToClient("Passwords don't match");
+					c2c.sendToClient("Account not created");
 				} catch (IOException e) {
 					error("Couldn't send 'passwords don't match' message to client");
 					error(e.getMessage());
 				}
 				
 			//Checks to see if the username is taken	
-			}else if (database.queryUsername().contains(createData.getUsername())) {
+			}else if (database.isThere(createData.getUsername())) {
 				
 				try {
-					c2c.sendToClient("Username taken");
+					c2c.sendToClient("Account not created");
 				} catch (IOException e) {
 					error("Couldn't send 'username taken' message to client");
 					error(e.getMessage());
@@ -212,8 +216,7 @@ public class Server extends AbstractServer
 				}
 				
 			//Hopefully handles any other errors
-			}else {
-				
+			}else {				
 				error("Something weird went wrong with creating an account");
 				
 				try {
@@ -264,15 +267,6 @@ public class Server extends AbstractServer
 				//Make a new user on the server
 				User newUser = new User(c2c);
 				newUser.logIn(loginData);
-				
-//				int score = database.getScore(newUser.getUsername());
-//				try {
-//					c2c.sendToClient(score);
-//				catch(IOException e) {
-//					error("Couldn't send score to client");
-//					error(e.getMessage());
-//					
-//				}
 				
 				//Add that user to the list of connected users and 
 				//add its snake to the list of snakes.  I was getting concurrent
@@ -353,7 +347,7 @@ public class Server extends AbstractServer
 			sendData();
 		}
 		
-		System.out.println("Server elapsed time: " + ((System.currentTimeMillis() - start) / 1000.f) + "s");
+		//System.out.println("Server elapsed time: " + ((System.currentTimeMillis() - start) / 1000.f) + "s");
 	}
 
 	//Checks all snake-snake and snake-food collisions
@@ -407,6 +401,22 @@ public class Server extends AbstractServer
 		}
 	}
 	
+	public boolean isThere(String username,String password) {
+		
+		return database.isThere(username, password);
+	}
+	
+	public Database getDatabase() {
+		return database;
+	}
+	
+	public void saveUser(String username, String password) {
+		database.executeDML(username, password);
+		
+	}
+	
+	
+	
 	//Sends the relevant data to all of the users
 	private void sendData() {
 		
@@ -455,26 +465,7 @@ public class Server extends AbstractServer
 						}
 					}
 				}
-				
-				//These for loops will send all snakes and all food to every user
-				/*for (Snake snake : snakeList) {
-					try {
-						clonedEntitiesToRender.add(snake.clone());
-
-					} catch (CloneNotSupportedException e) {
-						error("There was a cloning problem");
-						error(e.getMessage());
-					}
-				}
-				
-				for (Food food : foodList) {
-					try {
-						clonedEntitiesToRender.add(food.clone());
-					} catch (CloneNotSupportedException e) {
-						error("There was a cloning problem");
-						error(e.getMessage());
-					}
-				}*/
+		
 				
 				//Sends the game data to the user
 				//Right now the score won't change
@@ -499,90 +490,17 @@ public class Server extends AbstractServer
 
 	public static void main(String args[])
 	{
-		int port = 8300;
-		
+		int port = 8300;		
+	
 		if (args.length == 1) {
+
 			port = Integer.parseInt(args[0]);
-		}
+		}	
+		
+		
 		Server server = new Server(port);
 
 		
-		
-		
-		/*******************************************************************************************
-		 * All of this is test code that works so I don't want to delete it yet just in case... :) *
-		 * *****************************************************************************************
-		try
-		{
-			server.listen();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-
-		Vector3f pos = new Vector3f(0, 0, 0);
-		Snake snake = new Snake(pos, 1);
-		snake.setSpeed(0.05f);
-		snake.setBodyPartDistance(0.5f);
-		snake.setDirection(Math.PI);
-		snake.setColor(new Vector3f(.23f, .18f, .43f));
-
-		List<Food> foodList = new ArrayList<>();
-		List<Entity> entitiesToRender = new ArrayList<>();
-		int foodCount = 300;
-
-		foodList = new ArrayList<Food>();
-
-		for (int i = 0; i < foodCount; i++)
-		{
-			foodList.add(new Food(
-					new Vector3f((float) (Math.random() * 100.f - 50.f), (float) (Math.random() * 100.0f - 50.f), 0), 2,
-					0.1));
-		}
-
-		entitiesToRender.add(snake);
-		entitiesToRender.addAll(foodList);
-		Vector3f cameraLocation;
-
-		while (true)
-		{
-			long start = System.currentTimeMillis();
-			if (server.getNumberOfClients() > 0)
-			{
-				for (Food f : foodList)
-				{
-					if (f.collisionCheck(snake.getBody().get(0)))
-					{
-						snake.addToBody(f.getWorth());
-						f.setPosition(new Vector3f((float) (Math.random() * 100.f - 50.f),
-								(float) (Math.random() * 100.0f - 50.f), 0));
-					}
-				}
-
-				snake.keyUpdate();
-
-				cameraLocation = snake.getBody().get(0).getPosition().clone();
-				// GameData data = new GameData(entitiesToRender.subList(0,
-				// entitiesToRender.size()), new Vector3f(0, 0, 0), 0, true);
-
-				List<Entity> clonedEntitiesToRender = new ArrayList<>(entitiesToRender.size());
-				for (Entity entity : entitiesToRender)
-				{
-					try
-					{
-						//if (Math.abs(Point.distance(cameraLocation.getX(), cameraLocation.getX(), entity.getBody().get(0).getPosition().getX(), entity.getBody().get(0).getPosition().getY())) < 40.f)
-							clonedEntitiesToRender.add(entity.clone());
-					} catch (CloneNotSupportedException e)
-					{
-						e.printStackTrace();
-					}
-				}
-				GameData data = new GameData(clonedEntitiesToRender, cameraLocation, 0, false);
-				server.sendToAllClients(data);
-				System.out.println("Server elpased time: " + ((System.currentTimeMillis() - start) / 1000.f) + "s");
-			}
-		}
-		*/
 	}
 	
 }

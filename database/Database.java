@@ -28,6 +28,7 @@ public class Database
 		try 
 		{
 			Class.forName("com.mysql.jdbc.Driver");
+			//System.out.println("try hard");
 		}
 		catch (ClassNotFoundException e1)
 		{
@@ -60,7 +61,6 @@ public class Database
 	    String pass = prop.getProperty("password"); 
 	    try
 	    {
-	    	 System.out.println("Gets here too");
 	    	 //Read the connection properties as Strings
 	    	 System.out.println(url);
 	      
@@ -72,7 +72,6 @@ public class Database
 	    	System.out.println("Gets error");
 	    	System.out.println(sql);
 	    }
-	    System.out.println("Gets here");
 	}
 
 	public ArrayList<String> getUserPass(String query)
@@ -81,10 +80,10 @@ public class Database
 		try 
 		{
 			Statement stmt = conn.createStatement();
-			
-
-			
+			// Dynamically take the input parameter query and ue in execute query()
+			//2. take the results set and extract(parse) each column in each row
 			ResultSet rs;
+			System.out.println("its me");
 			rs=stmt.executeQuery("select '"
 			 		+ query +"' , aes_decrypt(password,'key') "
 			 				+ " from user");  
@@ -119,13 +118,14 @@ public class Database
 		try 
 		{
 			Statement stmt = conn.createStatement();
-			
-
-			
+			// Dynamically 
+			//take the input parameter query and ue in execute query()
+			//2. take the results set and extract(parse) each column in each row
 			ResultSet rs;
+			System.out.println("its me");
 			rs=stmt.executeQuery("select * from user");  
-			
-
+			//create a string from the columns - concatnate to create a comma
+			// delimited string field1, field2,...field3
 			ResultSetMetaData rmd;
 			rmd = rs.getMetaData();
 			//store each string in the array list
@@ -154,12 +154,14 @@ public class Database
 		try
 		{
 			Statement stmt = conn.createStatement();
-			
-
+			// Dynamically 
+			//take the input parameter query and ue in execute query()
+			//2. take the results set and extract(parse) each column in each row
 			ResultSet rs;
+			System.out.println("its me");
 			rs=stmt.executeQuery("select  username from User");  
-			
-
+			//create a string from the columns - concatnate to create a comma
+			// delimited string field1, field2,...field3
 			ResultSetMetaData rmd;
 			rmd = rs.getMetaData();
 			int no_columns = rmd.getColumnCount();
@@ -189,19 +191,21 @@ public class Database
 		try
 		{
 			Statement stmt = conn.createStatement();
-				
-			
+			// Dynamically 
+			//take the input parameter query and ue in execute query()
+			//2. take the results set and extract(parse) each column in each row
 			ResultSet rs;
-			
+			System.out.println("its me");
 			rs=stmt.executeQuery("select * aes_decrypt(password,'key') from User");  
-			
-
+			//create a string from the columns - concatnate to create a comma
+			// delimited string field1, field2,...field3
 			ResultSetMetaData rmd;
 			rmd = rs.getMetaData();
 			//store each string in the array list
 			int i = 1;
 			while(rs.next()) 
 			{
+				System.out.println("is this working");
 				queryString.add(rs.getString(i));
 			}
 	      
@@ -217,20 +221,55 @@ public class Database
 		return null;
 	}
 	
+	public boolean isThere(String username) {
+		try
+		{
+			Statement stmt = conn.createStatement();
+			// Dynamically 
+			//take the input parameter query and ue in execute query()
+			//2. take the results set and extract(parse) each column in each row
+			ResultSet rs;
+	
+			rs=stmt.executeQuery("select username, password from user"
+					+ " where username ='"+username+"';");  
+			//create a string from the columns - concatnate to create a comma
+			// delimited string field1, field2,...field3
+			ResultSetMetaData rmd;
+			if(!rs.isBeforeFirst()) {
+			
+				return false;
+			}
+			
+			rmd = rs.getMetaData();
+			//store each string in the array list
+			
+	      
+		  //return the arraylist containing the strings or null if no data found  
+		}
+		catch (SQLException sql)
+		{
+			System.out.println(sql);
+			return false;
+		}
+		
+		return true;
+	}
+	
 	public boolean isThere(String username, String password)
 	{
 		try
 		{
 			Statement stmt = conn.createStatement();
-			
-
-			
+			// Dynamically 
+			//take the input parameter query and ue in execute query()
+			//2. take the results set and extract(parse) each column in each row
 			ResultSet rs;
+
 			rs=stmt.executeQuery("select username, password from user"
 					+ " where username ='"+username+"' and"
 					+ " password  = aes_encrypt('"+password+"','key')");  
-			
-
+			//create a string from the columns - concatnate to create a comma
+			// delimited string field1, field2,...field3
 			ResultSetMetaData rmd;
 			if(!rs.isBeforeFirst())
 				return false;
@@ -241,7 +280,8 @@ public class Database
 				//Intentionally left blank
 				;
 			
-	       
+	      
+		  //return the arraylist containing the strings or null if no data found  
 		}
 		catch (SQLException sql)
 		{
@@ -259,7 +299,9 @@ public class Database
 			 Statement stmt = conn.createStatement();
 			 String dml2 = "insert into user values('"+username+"',"
 			 		+ "aes_encrypt('"+password+"','key') )";
-			 
+			 // Dynamically 
+			 //take the input parameter query and ue in execute query()
+			 //2. take the results set and extract(parse) each column in each row
 			 stmt.execute(dml2);
 			 System.out.println("inserted");
 			 return true;  
@@ -268,7 +310,8 @@ public class Database
 		{
 			  
 		}
-		 
+		//use execute instead of execute query
+		//no result set
 		return false;
 	} 
 }

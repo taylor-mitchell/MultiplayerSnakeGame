@@ -16,6 +16,7 @@ public class CreateAccountPanel extends JPanel{
 	private JTextField password1Field;
 	private JTextField password2Field;
 	private JLabel errorLabel;
+	private JButton submitButton;
 	
 	public String getUsername() {
 		return usernameField.getText();
@@ -32,6 +33,10 @@ public class CreateAccountPanel extends JPanel{
 	public void setError(String error){
 	    errorLabel.setText(error);
 	  }
+	
+	public String getError() {
+		return errorLabel.getText();
+	}
 	
 	public CreateAccountPanel(CreateAccountControl ac){
 		// Create a panel for the labels at the top of the GUI.
@@ -50,6 +55,7 @@ public class CreateAccountPanel extends JPanel{
 	    password1Field = new JPasswordField(10);
 	    JLabel password2Label = new JLabel("Re-enter password:", JLabel.RIGHT);
 	    password2Field = new JPasswordField(10);
+	 
 	    createPanel.add(usernameLabel);
 	    createPanel.add(usernameField);
 	    createPanel.add(password1Label);
@@ -59,7 +65,7 @@ public class CreateAccountPanel extends JPanel{
 	    
 	    // Create a panel for the buttons.
 	    JPanel buttonPanel = new JPanel();
-	    JButton submitButton = new JButton("Submit");
+	    submitButton = new JButton("Submit");
 	    submitButton.addActionListener(ac);
 	    JButton cancelButton = new JButton("Cancel");
 	    cancelButton.addActionListener(ac);    
@@ -72,6 +78,21 @@ public class CreateAccountPanel extends JPanel{
 	    grid.add(createPanel);
 	    grid.add(buttonPanel);
 	    this.add(grid);
+	}
+	public JTextField getUsernameField() {
+		return usernameField;
+	}
+	
+	public JTextField getPassword1Field() {
+		return password1Field;
+	}
+	
+	public JTextField getPassword2Field() {
+		return password2Field;
+	}
+	
+	public JButton getSubmitButton() {
+		return submitButton;
 	}
 	
 	

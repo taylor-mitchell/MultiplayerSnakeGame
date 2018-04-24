@@ -55,12 +55,12 @@ public class CreateAccountControl implements ActionListener{
 			}
 	      }
 	      
-	      CardLayout cardLayout = (CardLayout)container.getLayout();
-	      cardLayout.show(container, "1");
+	      
 	     
 	    }
 		
 	}
+
 	
 	public void displayError(String error)
 	  {

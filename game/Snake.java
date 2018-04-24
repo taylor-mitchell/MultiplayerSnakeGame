@@ -80,9 +80,6 @@ public class Snake extends Entity
 	private void eat() {
 		if (foodToAdd > 0) {
 			
-			/*for(Entity en : body) {
-				en.setRadius(this.getRadius());
-			}*/
 			body.add(new BodyPart(body.get(length - 1).getPosition(), this.getRadius()));			
 			foodToAdd--;
 			length++;
@@ -91,10 +88,13 @@ public class Snake extends Entity
 	
 	public void keyUpdate() {
 		double sp;
+
 		if (zoom) {
 			sp = speed * 2;
+	
 		}else {
 			sp = speed;
+
 		}
 		if (inPlay) {
 			eat();
@@ -120,16 +120,19 @@ public class Snake extends Entity
 					}else {
 						newDirection = Math.PI / 2;
 					}	
+					
 					body.get(i).setPosition(new Vector3f((float)(pos1.getX() + Math.cos(newDirection) * bodyPartDistance), (float)(pos1.getY() + Math.sin(newDirection) * bodyPartDistance), 0));
-					//body.get(i).setPosition((float)(pos1.getX() + Math.cos(newDirection) * bodyPartDistance), (float)(pos1.getY() + Math.sin(newDirection) * bodyPartDistance));
+					
 				}else if (deltaX < 0){
 					newDirection = Math.atan(deltaY/ deltaX);
+					
 					body.get(i).setPosition(new Vector3f((float)(pos1.getX() + Math.cos(newDirection) * bodyPartDistance), (float)(pos1.getY() + Math.sin(newDirection) * bodyPartDistance), 0));
-					//body.get(i).setPosition((float)(pos1.getX() + Math.cos(newDirection) * bodyPartDistance), (float)(pos1.getY() + Math.sin(newDirection) * bodyPartDistance));
+					
 				}else {
 					newDirection = -Math.atan(deltaY/ deltaX);
+					
 					body.get(i).setPosition(new Vector3f((float)(pos1.getX() - Math.cos(newDirection) * bodyPartDistance), (float)(pos1.getY() + Math.sin(newDirection) * bodyPartDistance), 0));
-					//body.get(i).setPosition((float)(pos1.getX() - Math.cos(newDirection) * bodyPartDistance), (float)(pos1.getY() + Math.sin(newDirection) * bodyPartDistance));
+					
 				}
 			}
 		}

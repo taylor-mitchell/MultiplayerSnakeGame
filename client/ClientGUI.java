@@ -11,8 +11,8 @@ public class ClientGUI extends JFrame
 {
 
   private JPanel view1; //4 views
-  private JPanel view2;
-  private JPanel view3;
+  private LoginPanel view2;
+  private CreateAccountPanel view3;
   private GamePanel view4;
 
   private Client client;
@@ -104,7 +104,12 @@ public class ClientGUI extends JFrame
 	  lc.displayError("Login Failed");
   }
   
-//  public void setTopScore(Integer score) {
-//	  view4.setTopScore(score);
-//  }
+  public void createAccountSuccess() {
+	  cardLayout.show(container, "2");
+  }
+  
+  public void createAccountFailed() {
+	  ac.displayError("Account not created");
+  }
+  
 }

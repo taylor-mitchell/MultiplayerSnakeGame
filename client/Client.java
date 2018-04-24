@@ -38,9 +38,12 @@ public class Client extends AbstractClient
 				
 			}else if (msg.equals("Login failed")){
 				gui.setNotReady();
+			}else if (msg.equals("Account not created")){
+				gui.createAccountFailed();
+			}else if (msg.equals("Account created")) {
+				gui.createAccountSuccess();
 			}
-//		}else if (arg0 instanceof Integer){
-//			gui.setTopScore((Integer)arg0);
+			
 		}else {
 			synchronized (game)
 			{
@@ -130,6 +133,8 @@ public class Client extends AbstractClient
 			game.notify();
 		}
 	}
+	
+
 	
 	public static void main(String[] args)
 	{
