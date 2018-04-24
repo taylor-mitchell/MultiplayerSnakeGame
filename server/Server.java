@@ -353,7 +353,7 @@ public class Server extends AbstractServer
 			sendData();
 		}
 		
-		//System.out.println("Server elapsed time: " + ((System.currentTimeMillis() - start) / 1000.f) + "s");
+		System.out.println("Server elapsed time: " + ((System.currentTimeMillis() - start) / 1000.f) + "s");
 	}
 
 	//Checks all snake-snake and snake-food collisions
@@ -369,10 +369,12 @@ public class Server extends AbstractServer
 		//and then check for food collisions
 		for(Snake snake1 : snakeList) {
 			for(Snake snake2 : snakeList) {
-				if (snake1 != snake2) {
-					if (snake1.collisionCheck(snake2.getBody().get(0))){
-						deadSnakes.add(snake2);
-						snake1.addToScore(snake2.getLength());
+				if (snake2.isInPlay()) {
+					if (snake1 != snake2) {
+						if (snake1.collisionCheck(snake2.getBody().get(0))){
+							deadSnakes.add(snake2);
+							snake1.addToScore(snake2.getLength());
+						}
 					}
 				}
 			}
@@ -425,15 +427,17 @@ public class Server extends AbstractServer
 				//This for loop will make sure that only the snakes that are nearby are sent to the user
 				//If we change the client game view size, then we need to change the 8.0f
 				for (Snake snake : snakeList) {
-					for (Entity bp : snake.getBody()) {
-						if (Math.hypot(userPosition.getX() - bp.getPosition().getX(), userPosition.getY() - bp.getPosition().getY()) < 30.0f) {
-							try {
-								clonedEntitiesToRender.add(snake.clone());
-							} catch (CloneNotSupportedException e) {
-								error("There was a cloning problem");
-								error(e.getMessage());
+					if (snake.isInPlay()) {
+						for (Entity bp : snake.getBody()) {
+							if (Math.hypot(userPosition.getX() - bp.getPosition().getX(), userPosition.getY() - bp.getPosition().getY()) < 50.0f) {
+								try {
+									clonedEntitiesToRender.add(snake.clone());
+								} catch (CloneNotSupportedException e) {
+									error("There was a cloning problem");
+									error(e.getMessage());
+								}
+								break;
 							}
-							break;
 						}
 					}
 					
@@ -442,7 +446,7 @@ public class Server extends AbstractServer
 				//This for loop will make sure that only the food that is nearby is sent to the user
 				//If we change the client game view size, then we need to change the 8.0f
 				for (Food food : foodList) {
-					if (Math.hypot(userPosition.getX() - food.getPosition().getX(), userPosition.getY() - food.getPosition().getY()) < 30.0f) {
+					if (Math.hypot(userPosition.getX() - food.getPosition().getX(), userPosition.getY() - food.getPosition().getY()) < 50.0f) {
 						try {
 							clonedEntitiesToRender.add(food.clone());
 						} catch (CloneNotSupportedException e) {
