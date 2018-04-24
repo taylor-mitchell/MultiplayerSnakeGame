@@ -33,12 +33,12 @@ public class QuadLoader
 
 		// Vertices positions
 		storeDataInAttributeList(0, 3, quad.getVerticesCoordinates());
-		
+
 		// Texture coordinates
 		storeDataInAttributeList(1, 2, quad.getTextureCoordinates());
-		
+
 		GL30.glBindVertexArray(0);
-		
+
 		return new RawQuad(vaoID, quad.getIndices().length);
 	}
 

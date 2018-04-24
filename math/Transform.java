@@ -21,7 +21,7 @@ public class Transform
 	public static Matrix4f getViewMatrix(Camera camera)
 	{
 		Vector3f negativeCameraPos = new Vector3f(camera.getPosition().flip());
-        return new Matrix4f().initTranslation(negativeCameraPos);
+		return new Matrix4f().initTranslation(negativeCameraPos);
 	}
 
 	public static Matrix4f getProjectionMatrix()
