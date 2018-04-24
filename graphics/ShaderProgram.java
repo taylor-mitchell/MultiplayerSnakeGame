@@ -26,6 +26,7 @@ import static org.lwjgl.opengl.GL20.glValidateProgram;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 
 import math.Matrix4f;
 import math.Vector3f;
@@ -109,9 +110,8 @@ public abstract class ShaderProgram
 	private static int loadShader(String file, int type)
 	{
 		StringBuilder shaderSource = new StringBuilder();
-		try
+		try(BufferedReader reader = new BufferedReader(new InputStreamReader(ShaderProgram.class.getResourceAsStream(file))))
 		{
-			BufferedReader reader = new BufferedReader(new FileReader(file));
 			String line;
 			while ((line = reader.readLine()) != null)
 			{

@@ -6,8 +6,8 @@ import math.Vector3f;
 
 public class Shader extends ShaderProgram
 {
-	private static final String VERTEX_FILE = "graphics/VertexShader.vert";
-	private static final String FRAGMENT_FILE = "graphics/VertexShader.frag";
+	private static final String VERTEX_FILE = "/graphics/VertexShader.vert";
+	private static final String FRAGMENT_FILE = "/graphics/VertexShader.frag";
 	
 	private int locationOverrideTextureColor;
 	private int locationTransformationMatrix;

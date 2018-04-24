@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL30;
 
 import game.Entity;
 import game.Food;
+import game.Game;
 import math.Transform;
 
 public class Renderer 
@@ -23,8 +24,9 @@ public class Renderer
 		this.activeCamera = activeCamera;
 		this.activeShader = activeShader;
 		this.rawQuad = QuadLoader.loadToVAO(new Quad());
-		this.snakeTexture = new Texture("game/single_stroke.png");
-		this.foodTexture = new Texture("game/paint-spot.png");
+		
+		this.snakeTexture = new Texture("/resources/single_stroke.png");
+		this.foodTexture = new Texture("/resources/paint-spot.png");
 	}
 
 	/**
