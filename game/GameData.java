@@ -11,7 +11,7 @@ public class GameData implements Serializable
 	private final Vector3f cameraLocation;
 	private final int currrentScore;
 	private final boolean isGameOver;
-
+	
 	public GameData(List<Entity> worldEntities, Vector3f cameraLocation, int currrentScore, boolean isGameOver)
 	{
 		this.worldEntities = worldEntities;
@@ -29,7 +29,7 @@ public class GameData implements Serializable
 	{
 		return cameraLocation;
 	}
-
+	
 	public int getCurrentCore()
 	{
 		return currrentScore;

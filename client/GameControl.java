@@ -9,39 +9,31 @@ import javax.swing.JPanel;
 
 import game.Game;
 
-public class GameControl implements ActionListener
-{
-
+public class GameControl implements ActionListener{
+	
 	private JPanel container;
 	private Client client;
 	private Game game;
-
-	public GameControl(Client client)
-	{
+	
+	public GameControl(Client client) {
 		this.client = client;
 	}
-
+	
 	@Override
-	public void actionPerformed(ActionEvent e)
-	{
+	public void actionPerformed(ActionEvent e) {
 		String command = e.getActionCommand();
-
-		if (command == "Play")
-		{
-			game = new Game(client, (GamePanel) container);
+		
+		if (command == "Play") {
+			game = new Game(client, (GamePanel)container);
 			Thread gameThread = new Thread(game);
 			client.setGameReady(true);
 			gameThread.start();
-		}
-		else if (command == "Stop")
-		{
+		}else if (command == "Stop") {
 			client.setGameReady(false);
-		}
-		else if (command == "Quit")
-		{
+		}else if (command == "Quit") {
 			client.setGameReady(false);
 			System.exit(0);
-		}
+		}		
 	}
 
 	public void setContainer(JPanel container)

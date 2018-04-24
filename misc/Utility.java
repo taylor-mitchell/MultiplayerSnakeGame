@@ -21,7 +21,7 @@ public class Utility
 	public static FloatBuffer createFloatBuffer(float array[])
 	{
 		FloatBuffer result = ByteBuffer.allocateDirect(array.length << 2).order(ByteOrder.nativeOrder())
-				.asFloatBuffer();
+										.asFloatBuffer();
 		result.put(array).flip();
 		return result;
 	}

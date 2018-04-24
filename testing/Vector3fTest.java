@@ -51,8 +51,8 @@ public class Vector3fTest
   public void testToString() 
   {
 	  Vector3f expected = new Vector3f(6.25f,6.25f,6.25f);
-	  
-	  assertNotNull(expected.toString());
+	  String actual = "(6.25, 6.25, 6.25)";
+	  assertEquals(expected.toString(),actual);
   }
 
 }
