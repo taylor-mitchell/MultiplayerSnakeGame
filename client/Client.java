@@ -40,6 +40,7 @@ public class Client extends AbstractClient
 			synchronized (game)
 			{
 				GameData data = (GameData) arg0;
+				System.out.println(data.getCameraLocation());
 				game.setGameOver(data.isGameOver());
 				game.setCurrentScore(data.getCurrentCore());
 				game.setEntitiesToRender(data.getWorldEntities());
