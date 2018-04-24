@@ -381,11 +381,11 @@ public class Server extends AbstractServer
 		//and then check for food collisions
 		for(Snake snake1 : snakeList) {
 			for(Snake snake2 : snakeList) {
-				if (snake1 != snake2) {
+				//if (snake1 != snake2) {
 					if (snake1.collisionCheck(snake2.getBody().get(0))){
 						deadSnakes.add(snake2);
 						snake1.addToScore(snake2.getLength());
-					}
+					//}
 				}
 			}
 			

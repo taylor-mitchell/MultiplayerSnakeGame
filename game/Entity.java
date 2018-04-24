@@ -79,8 +79,10 @@ public abstract class Entity implements Serializable
 	
 	public boolean collisionCheck(Entity en) {
 		if (inPlay) {
-			if (Math.hypot(position.getX() - en.getPosition().getX(),position.getY() - en.getPosition().getY()) < radius + en.getRadius()) {
-				return true;
+			for(Entity bp : body) {
+				if (Math.hypot(position.getX() - bp.getPosition().getX(),position.getY() - bp.getPosition().getY()) < radius + bp.getRadius()) {
+					return true;
+				}
 			}
 		}		
 		return false;
