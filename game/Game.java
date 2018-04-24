@@ -71,18 +71,18 @@ public class Game implements Runnable
 			synchronized (this)
 			{
 				if (ready) {
-					if (gameOver)
-					{
-						try
-						{
-							client.closeConnection();
-						} catch (IOException e)
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						break;
-					}
+//					if (gameOver)
+//					{
+//						try
+//						{
+//							client.closeConnection();
+//						} catch (IOException e)
+//						{
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//						break;
+//					}
 					
 					if (!client.isConnected())
 					{
