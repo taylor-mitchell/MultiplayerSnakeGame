@@ -96,6 +96,14 @@ public class ClientGUI extends JFrame
 	  view4.setScore(score);
   } 
   
+  public void setReady() {
+	  cardLayout.show(container, "4");
+  }
+  
+  public void setNotReady() {
+	  lc.displayError("Login Failed");
+  }
+  
 //  public void setTopScore(Integer score) {
 //	  view4.setTopScore(score);
 //  }

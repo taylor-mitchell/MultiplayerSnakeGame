@@ -4,10 +4,10 @@ import graphics.Camera;
 
 public class Transform
 {
-	public static final float LEFT = -8.f;
-	public static final float RIGHT = 8.f;
-	public static final float BOTTOM = -4.5f;
-	public static final float TOP = 4.5f;
+	public static final float LEFT = -15.f;
+	public static final float RIGHT = 15.f;
+	public static final float BOTTOM = -10.0f;
+	public static final float TOP = 10.0f;
 	private static final float NEAR = -8.f;
 	private static final float FAR = 20.f;
 

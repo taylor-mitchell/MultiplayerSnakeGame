@@ -14,10 +14,12 @@ public class LoginControl implements ActionListener
   // Private data fields for the container and chat client.
   private JPanel container;
   private Client client;
+  private boolean ready;
   
   // Constructor for the login controller.
   public LoginControl(JPanel container, Client client)
   {
+	this.ready = false;
     this.container = container;
     this.client = client;
    
@@ -62,13 +64,16 @@ public class LoginControl implements ActionListener
       	gp.setUsername(data.getUsername());
       	gp.setScore(0);
       	
-      	cardLayout.show(container, "4");
+
       }
       
      
      
     }
+    
+   
   }
+  
 
 
 

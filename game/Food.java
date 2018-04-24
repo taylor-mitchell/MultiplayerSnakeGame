@@ -4,11 +4,9 @@ import math.Vector3f;
 
 public class Food extends Entity
 {
-	private float maxSize;
-	private float currentSize;
+
 	private int worth;
-	private boolean shouldGrow;
-	private boolean eaten;
+
 	
 	public Food(Vector3f position, int worth, double radius)
 	{

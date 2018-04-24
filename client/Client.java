@@ -31,8 +31,13 @@ public class Client extends AbstractClient
 	protected void handleMessageFromServer(Object arg0)
 	{
 		if (arg0 instanceof String) {
-			if (((String)arg0).equals("Login successful")) {
-				//game.setReady(true);
+			String msg = (String)arg0;
+			System.out.println(msg);
+			if (msg.equals("Login successful")) {
+				gui.setReady();
+				
+			}else if (msg.equals("Login failed")){
+				gui.setNotReady();
 			}
 //		}else if (arg0 instanceof Integer){
 //			gui.setTopScore((Integer)arg0);

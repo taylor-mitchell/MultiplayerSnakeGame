@@ -24,7 +24,6 @@ import ocsf.server.ConnectionToClient;
 public class Server extends AbstractServer
 {
 	private Database database;
-	private ServerGUI serverGUI;
 	private Map<Long, User> connectedUsers;
 	Vector3f cameraLocation;
 	private List<Snake> snakeList;
@@ -48,7 +47,7 @@ public class Server extends AbstractServer
 		init();
 	}
 
-	public Server(ServerGUI serverGUI)
+	public Server()
 	{
 		super(0);
 		
@@ -62,7 +61,7 @@ public class Server extends AbstractServer
 	}
 	
 	private void init() {		
-		databaseCheck = false;
+		databaseCheck = true;
 		
 		//This listener controls what the timer does 
 		timerListener = new ActionListener() {
@@ -242,30 +241,19 @@ public class Server extends AbstractServer
 		//Gets the password from the database if its there
 		
 		if (databaseCheck) {
-			ArrayList<String> password = database.getUserPass(loginData.getUsername());
-			
-			//If nothing is returned, then that should mean that the username doesn't exist
-			if (password.size() == 0) {
+			if (!database.isThere(loginData.getUsername(), loginData.getPassword())){
 				
 				try {
-					c2c.sendToClient("Username doesn't exist");
+					c2c.sendToClient("Login failed");
 				} catch (IOException e) {
 					error("Couldn't send 'username doesn't exist' message to client");
 					error(e.getMessage());
 				}
 				
-			//If the password is wrong	
-			}else if (!password.contains(loginData.getPassword())) {
-				
-				try {
-					c2c.sendToClient("Wrong password");
-				} catch (IOException e) {
-					error("Couldn't send 'wrong password' message to client");
-					error(e.getMessage());
-				}
+
 				
 			//If the password is right	
-			}else if (password.contains(loginData.getPassword())){
+			}else if(database.isThere(loginData.getUsername(), loginData.getPassword())) {
 				
 				try {
 					c2c.sendToClient("Login successful");
@@ -365,7 +353,7 @@ public class Server extends AbstractServer
 			sendData();
 		}
 		
-		System.out.println("Server elapsed time: " + ((System.currentTimeMillis() - start) / 1000.f) + "s");
+		//System.out.println("Server elapsed time: " + ((System.currentTimeMillis() - start) / 1000.f) + "s");
 	}
 
 	//Checks all snake-snake and snake-food collisions
@@ -438,7 +426,7 @@ public class Server extends AbstractServer
 				//If we change the client game view size, then we need to change the 8.0f
 				for (Snake snake : snakeList) {
 					for (Entity bp : snake.getBody()) {
-						if (Math.hypot(userPosition.getX() - bp.getPosition().getX(), userPosition.getY() - bp.getPosition().getY()) < 10.0f) {
+						if (Math.hypot(userPosition.getX() - bp.getPosition().getX(), userPosition.getY() - bp.getPosition().getY()) < 30.0f) {
 							try {
 								clonedEntitiesToRender.add(snake.clone());
 							} catch (CloneNotSupportedException e) {
@@ -454,7 +442,7 @@ public class Server extends AbstractServer
 				//This for loop will make sure that only the food that is nearby is sent to the user
 				//If we change the client game view size, then we need to change the 8.0f
 				for (Food food : foodList) {
-					if (Math.hypot(userPosition.getX() - food.getPosition().getX(), userPosition.getY() - food.getPosition().getY()) < 10.0f) {
+					if (Math.hypot(userPosition.getX() - food.getPosition().getX(), userPosition.getY() - food.getPosition().getY()) < 30.0f) {
 						try {
 							clonedEntitiesToRender.add(food.clone());
 						} catch (CloneNotSupportedException e) {
