@@ -47,7 +47,7 @@ public class Game implements Runnable
 	public void initGame()
 	{
 		message = new UserMessage(0, false);
-		
+
 		camera = new Camera(new Vector3f(0, 0, 0));
 
 		// Create an window and allow opengl operations
@@ -70,32 +70,33 @@ public class Game implements Runnable
 		{
 			synchronized (this)
 			{
-				if (ready) {
-//					if (gameOver)
-//					{
-//						try
-//						{
-//							client.closeConnection();
-//						} catch (IOException e)
-//						{
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-//						break;
-//					}
-					
+				if (ready)
+				{
+					// if (gameOver)
+					// {
+					// try
+					// {
+					// client.closeConnection();
+					// } catch (IOException e)
+					// {
+					// // TODO Auto-generated catch block
+					// e.printStackTrace();
+					// }
+					// break;
+					// }
+
 					if (!client.isConnected())
 					{
 						displayConnectionError();
 						break;
 					}
-	
+
 					updateScore();
-					
+
 					checkInput();
-	
+
 					renderer.prepare();
-	
+
 					renderer.renderEntities(entitiesToRender);
 					display.updateDisplay();
 					try
@@ -106,13 +107,14 @@ public class Game implements Runnable
 						gameOver = true;
 						e.printStackTrace();
 					}
-					
+
 				}
 			}
 		}
 
-		//System.out.println(String.format("Elpased Time: %f seconds", display.getDeltaTime()));
-		
+		// System.out.println(String.format("Elpased Time: %f seconds",
+		// display.getDeltaTime()));
+
 		client.setGameReady(false);
 
 		QuadLoader.cleanUp();
@@ -130,11 +132,12 @@ public class Game implements Runnable
 		else if (display.isKeyPressed(GLFW_KEY_RIGHT))
 		{
 			newMessage.setTurn(-1);
-		}else {
+		}
+		else
+		{
 			newMessage.setTurn(0);
 		}
-		
-		
+
 		if (display.isKeyPressed(GLFW_KEY_UP))
 		{
 			newMessage.setZoom(true);
@@ -143,8 +146,9 @@ public class Game implements Runnable
 		{
 			newMessage.setZoom(false);
 		}
-		
-		if (!newMessage.equals(message)) {
+
+		if (!newMessage.equals(message))
+		{
 			try
 			{
 				client.sendToServer(newMessage);
@@ -152,7 +156,7 @@ public class Game implements Runnable
 			{
 				e.printStackTrace();
 			}
-			
+
 			message.setTurn(newMessage.getTurn());
 			message.setZoom(newMessage.isZoom());
 		}
@@ -160,9 +164,11 @@ public class Game implements Runnable
 
 	private void updateScore()
 	{
-		SwingUtilities.invokeLater( new Runnable() {
+		SwingUtilities.invokeLater(new Runnable()
+		{
 			@Override
-			public void run() {
+			public void run()
+			{
 				gamePanel.setScore(currentScore);
 			}
 		});
@@ -192,8 +198,9 @@ public class Game implements Runnable
 	{
 		camera.setPosition(cameraLocation);
 	}
-	
-	public void setReady(boolean ready) {
+
+	public void setReady(boolean ready)
+	{
 		this.ready = ready;
 	}
 }

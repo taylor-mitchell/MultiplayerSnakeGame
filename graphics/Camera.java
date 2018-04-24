@@ -15,13 +15,14 @@ public class Camera
 	{
 		return position;
 	}
-	
+
 	public void translate(Vector3f amount)
 	{
 		position.add(amount);
 	}
-	
-	public void setPosition(Vector3f pos) {
+
+	public void setPosition(Vector3f pos)
+	{
 		position = pos;
 	}
 }

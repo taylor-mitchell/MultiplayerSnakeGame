@@ -7,7 +7,6 @@ public class Food extends Entity
 
 	private int worth;
 
-	
 	public Food(Vector3f position, int worth, double radius)
 	{
 		super(position, radius);
@@ -19,14 +18,14 @@ public class Food extends Entity
 	{
 		// TODO Auto-generated method stub
 	}
-	
+
 	public int getWorth()
 	{
 		return worth;
 	}
-	
+
 	@Override
-	public Food clone() throws CloneNotSupportedException 
+	public Food clone() throws CloneNotSupportedException
 	{
 		Food clonedFood = new Food(position.clone(), worth, radius);
 		return clonedFood;

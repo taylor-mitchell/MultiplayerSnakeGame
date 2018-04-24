@@ -59,11 +59,13 @@ public class Vector3f implements Serializable
 		z += rhs.z;
 		return this;
 	}
-	
-	public void add(float x, float y, float z) {
+
+	public Vector3f add(float x, float y, float z)
+	{
 		this.x += x;
 		this.y += y;
 		this.z += z;
+		return this;
 	}
 
 	public Vector3f sub(Vector3f rhs)
