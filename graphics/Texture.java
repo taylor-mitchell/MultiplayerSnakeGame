@@ -14,15 +14,15 @@ public class Texture
 {
 	private int width;
 	private int height;
-	private int id;
-	private int data[];
+	private final int id;
+	private final int data[];
 	
 	public Texture(String filename)
 	{
 		data = decodePNG(filename);
         id = GL11.glGenTextures();
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, Utility.createIntBuffer(data));
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
@@ -32,7 +32,7 @@ public class Texture
     {
         int[] pixels = null;
         try{
-            BufferedImage image = ImageIO.read(new FileInputStream(filename));
+            BufferedImage image = ImageIO.read(getClass().getResourceAsStream(filename));
             width = image.getWidth();
             height = image.getHeight();
             pixels = new int[width * height];
@@ -70,10 +70,5 @@ public class Texture
 	public int getId()
 	{
 		return id;
-	}
-
-	public int[] getData()
-	{
-		return data;
 	}
 }
